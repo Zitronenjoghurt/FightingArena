@@ -79,6 +79,21 @@ class Fighter():
     def set_stamina_regen(self, stamina_regen: int) -> None:
         self.stamina_regen = stamina_regen
 
+    def add_hp(self, hp: int) -> None:
+        self.hp += hp
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
+
+    def add_mp(self, mp: int) -> None:
+        self.mp += mp
+        if self.mp > self.max_mp:
+            self.mp = self.max_mp
+
+    def add_stamina(self, stamina: int) -> None:
+        self.stamina += stamina
+        if self.stamina > self.max_stamina:
+            self.stamina = self.max_stamina
+
     def remove_hp(self, hp: int) -> None:
         self.hp -= hp
         if self.hp <= 0:

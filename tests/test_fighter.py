@@ -61,6 +61,29 @@ def test_remove():
     assert fighter.get_mp() == 50
     assert fighter.get_stamina() == 50
 
+def test_add():
+    fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+
+    fighter.set_hp(50)
+    fighter.set_mp(50)
+    fighter.set_stamina(50)
+
+    fighter.add_hp(50)
+    fighter.add_mp(50)
+    fighter.add_stamina(50)
+
+    assert fighter.get_hp() == 100
+    assert fighter.get_mp() == 100
+    assert fighter.get_stamina() == 100
+
+    fighter.add_hp(100)
+    fighter.add_mp(100)
+    fighter.add_stamina(100)
+
+    assert fighter.get_hp() == 100
+    assert fighter.get_mp() == 100
+    assert fighter.get_stamina() == 100
+
 def test_update():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
     
