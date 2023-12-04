@@ -4,6 +4,9 @@ import os
 from typing import Optional
 from .action import ActionFactory
 from .effect import EffectFactory
+
+from ..interfaces.action_protocol import IAction
+from ..interfaces.effect_protocol import IEffect
 from ..interfaces.fighter_protocol import IFighter
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,14 +33,14 @@ class SkillLibrary():
 
 class Skill():
     def __init__(self, user: IFighter, actions: dict[dict], effects: dict[dict]) -> None:
-        self.user = user
+        self.user: IFighter = user
 
-        self.actions = []
+        self.actions: list[IAction] = []
         for action_type, action_args in actions.items():
             action = ActionFactory.create_action(action_type=action_type, action_args=action_args, user=self.user)
             self.actions.append(action)
 
-        self.effects = []
+        self.effects: list[IEffect] = []
         for effect_type, effect_args in effects.items():
             effect = EffectFactory.create_effect(effect_type=effect_type, effect_args=effect_args)
             self.effects.append(effect)

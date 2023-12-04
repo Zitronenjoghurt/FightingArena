@@ -7,9 +7,6 @@ class Effect():
     def get_duration(self) -> int:
         return self.duration
 
-    def is_inactive(self) -> bool:
-        return not self.active
-
 class BurnEffect(Effect):
     def __init__(self, duration: int, damage: int) -> None:
         self.duration = duration
