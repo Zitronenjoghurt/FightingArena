@@ -10,11 +10,26 @@ class Fighter():
         self.mp = self.max_mp
         self.max_stamina = max_stamina
         self.stamina = self.max_stamina
+        
+        self.effects = []
 
     def update(self) -> None:
+        self.execute_effects()
         self.hp = min(self.hp, self.max_hp)
         self.mp = min(self.mp, self.max_mp)
         self.stamina = min(self.stamina, self.max_stamina)
+
+    def execute_effects(self) -> None:
+        for effect_item in self.effects:
+            effect_item["effect"].execute(self)
+            effect_item["duration"] -= 1
+
+            if effect_item["duration"] <= 0:
+                self.effects.remove(effect_item)
+
+    def apply_effect(self, effect) -> None:
+        effect_item = {"effect": effect, "duration": effect.get_duration()}
+        self.effects.append(effect_item)
 
     def get_max_hp(self) -> int:
         return self.max_hp

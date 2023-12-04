@@ -8,8 +8,8 @@ def test_behavior():
     attack1 = ActionFactory.create_action(action_type="attack", action_args={"damage": 10}, user=fighter1)
     attack2 = ActionFactory.create_action(action_type="attack", action_args={"damage": 25}, user=fighter2)
 
-    heal1 = ActionFactory.create_action(action_type="heal", action_args={"mp_cost": 90, "heal_amount": 25}, user=fighter1)
-    heal2 = ActionFactory.create_action(action_type="heal", action_args={"mp_cost": 80, "heal_amount": 10}, user=fighter2)
+    heal1 = ActionFactory.create_action(action_type="heal", action_args={"mp_cost": 90, "amount": 25}, user=fighter1)
+    heal2 = ActionFactory.create_action(action_type="heal", action_args={"mp_cost": 80, "amount": 10}, user=fighter2)
 
     # attack 1
     assert attack1.is_executable() == True
