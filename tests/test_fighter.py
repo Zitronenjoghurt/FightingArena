@@ -5,15 +5,12 @@ def test_init():
 
     assert fighter.get_max_hp() == 100
     assert fighter.get_hp() == 100
-    assert fighter.get_hp_regen() == 0
 
     assert fighter.get_max_mp() == 100
     assert fighter.get_mp() == 100
-    assert fighter.get_mp_regen() == 0
 
     assert fighter.get_max_stamina() == 100
     assert fighter.get_stamina() == 100
-    assert fighter.get_stamina_regen() == 0
 
 def test_setters():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
@@ -33,14 +30,6 @@ def test_setters():
     assert fighter.get_hp() == 150
     assert fighter.get_mp() == 150
     assert fighter.get_stamina() == 150
-
-    fighter.set_hp_regen(2)
-    fighter.set_mp_regen(2)
-    fighter.set_stamina_regen(2)
-
-    assert fighter.get_hp_regen() == 2
-    assert fighter.get_mp_regen() == 2
-    assert fighter.get_stamina_regen() == 2
 
 def test_remove():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
@@ -95,12 +84,12 @@ def test_update():
     assert fighter.get_mp() == 50
     assert fighter.get_stamina() == 50
 
-    fighter.set_hp_regen(1)
-    fighter.set_mp_regen(1)
-    fighter.set_stamina_regen(1)
+    fighter.set_max_hp(20)
+    fighter.set_max_mp(20)
+    fighter.set_max_stamina(20)
 
     fighter.update()
 
-    assert fighter.get_hp() == 51
-    assert fighter.get_mp() == 51
-    assert fighter.get_stamina() == 51
+    assert fighter.get_hp() == 20
+    assert fighter.get_mp() == 20
+    assert fighter.get_stamina() == 20

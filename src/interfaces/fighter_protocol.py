@@ -10,16 +10,10 @@ class IFighter(Protocol):
     def get_hp(self) -> int:
         ...
     
-    def get_hp_regen(self) -> int:
-        ...
-    
     def get_max_mp(self) -> int:
         ...
     
     def get_mp(self) -> int:
-        ...
-    
-    def get_mp_regen(self) -> int:
         ...
     
     def get_max_stamina(self) -> int:
@@ -28,16 +22,10 @@ class IFighter(Protocol):
     def get_stamina(self) -> int:
         ...
     
-    def get_stamina_regen(self) -> int:
-        ...
-    
     def set_max_hp(self, max_hp: int) -> None:
         ...
     
     def set_hp(self, hp: int) -> None:
-        ...
-
-    def set_hp_regen(self, hp_regen: int) -> None:
         ...
 
     def set_max_mp(self, max_mp: int) -> None:
@@ -46,16 +34,10 @@ class IFighter(Protocol):
     def set_mp(self, mp: int) -> None:
         ...
 
-    def set_mp_regen(self, mp_regen: int) -> None:
-        ...
-
     def set_max_stamina(self, max_stamina: int) -> None:
         ...
 
     def set_stamina(self, stamina: int) -> None:
-        ...
-
-    def set_stamina_regen(self, stamina_regen: int) -> None:
         ...
 
     def add_hp(self, hp: int) -> None:
