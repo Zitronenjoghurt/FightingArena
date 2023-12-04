@@ -1,7 +1,7 @@
 from src.classes.effect import EffectFactory
 from src.classes.fighter import Fighter
 
-def test_behavior():
+def test_burn():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
 
     burn = EffectFactory.create_effect("burn", {"duration": 3, "damage": 10})
