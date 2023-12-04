@@ -1,0 +1,10 @@
+{
+    "fireball": {
+        "actions": {
+            "attack": {"damage": 10, "mp_cost": 10}
+        },
+        "effects": {
+            "burn": {"duration": 3, "damage": 5}
+        }
+    }
+}
