@@ -1,6 +1,8 @@
 from ..interfaces.fighter_protocol import IFighter
 
 class Effect():
+    categories = []
+    
     def execute(self, target: IFighter) -> None:
         pass
 

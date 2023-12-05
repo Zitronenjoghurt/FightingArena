@@ -3,6 +3,8 @@ from typing import Optional
 from ..interfaces.fighter_protocol import IFighter
 
 class Action():
+    categories = []
+    
     def __init__(self, user: Optional[IFighter] = None, mp_cost: int = 0, stamina_cost: int = 0) -> None:
         self.user = user
         self.mp_cost = mp_cost
