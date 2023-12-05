@@ -1,6 +1,12 @@
+import json
+import os
 from typing import Optional
+from ..classes.skill import Skill
 from ..interfaces.effect_protocol import IEffect
 from ..interfaces.skill_protocol import ISkill
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+FIGHTERS_FILE_PATH = os.path.join(CURRENT_DIR, '..', 'data', 'fighters')
 
 class Fighter():
     def __init__(self,
@@ -8,6 +14,9 @@ class Fighter():
                  max_mp: int = 0,
                  max_stamina: int = 0
                  ) -> None:
+        if not self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina):
+            raise ValueError(f"Invalid init parameters for fighter class.")
+        
         self.max_hp = max_hp
         self.hp = self.max_hp
         self.max_mp = max_mp
@@ -17,6 +26,47 @@ class Fighter():
         
         self.effects = []
         self.skills: dict[str, ISkill] = {}
+
+    @staticmethod
+    def load_from_file(fighter_name: str) -> 'Fighter':
+        fighter_file_path = os.path.join(FIGHTERS_FILE_PATH, f"{fighter_name}.json")
+
+        try:
+            with open(fighter_file_path, 'r') as f:
+                data = json.load(f)
+            return Fighter.create_from_dict(data)
+        except FileNotFoundError:
+            raise ValueError(f"Fighter {fighter_name} does not exist. Make sure {fighter_file_path} exists.")
+
+    @staticmethod
+    def create_from_dict(data: dict) -> 'Fighter':
+        max_hp = data.get("max_hp", None)
+        max_mp = data.get("max_mp", None)
+        max_stamina = data.get("max_stamina", None)
+        skills = data.get("skills", None)
+
+        if any(var is None for var in [max_hp, max_mp, max_stamina, skills]):
+            raise ValueError(f"Fighter data is incomplete.")
+        
+        if not isinstance(skills, list):
+            raise ValueError(f"Fighter overall skill data is invalid.\n{skills}")
+        
+        fighter = Fighter(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina)
+
+        for skill_data in skills:
+            skill_name = skill_data.get("name", None)
+            if skill_name is None:
+                raise ValueError(f"Fighter specific skill data is invalid.\n{skill_data}")
+            skill = Skill.create_skill(skill_name=skill_name, fighter=fighter)
+            fighter.add_skill(skill=skill)
+
+        return fighter
+        
+    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int) -> bool:
+        if any(not isinstance(var, int) for var in [max_hp, max_mp, max_stamina]):
+            return False
+        
+        return True
 
     def update(self) -> None:
         self.execute_effects()

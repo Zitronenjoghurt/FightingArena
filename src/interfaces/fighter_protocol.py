@@ -3,6 +3,17 @@ from .effect_protocol import IEffect
 from .skill_protocol import ISkill
 
 class IFighter(Protocol):
+    @staticmethod
+    def load_from_file(fighter_name: str) -> 'IFighter':
+        ...
+
+    @staticmethod
+    def create_from_dict(data: dict) -> 'IFighter':
+        ...
+        
+    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int) -> bool:
+        ...
+
     def update(self) -> None:
         ...
 

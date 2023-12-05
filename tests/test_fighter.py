@@ -13,6 +13,36 @@ def test_init():
     assert fighter.get_max_stamina() == 100
     assert fighter.get_stamina() == 100
 
+def test_load_from_file():
+    barbarian = Fighter.load_from_file("barbarian")
+    wizard = Fighter.load_from_file("wizard")
+
+    assert barbarian.get_hp() == 100
+    assert barbarian.get_mp() == 0
+    assert barbarian.get_stamina() == 100
+    assert barbarian.skill_usable("sword slash") == True
+
+    assert wizard.get_hp() == 80
+    assert wizard.get_mp() == 100
+    assert wizard.get_stamina() == 20
+    assert wizard.skill_usable("fireball") == True
+
+    barbarian.use_skill("sword slash", wizard)
+    assert barbarian.get_stamina() == 90
+    assert wizard.get_hp() == 65
+
+    wizard.use_skill("fireball", barbarian)
+    assert wizard.get_mp() == 90
+    assert barbarian.get_hp() == 90
+    barbarian.update()
+    assert barbarian.get_hp() == 85
+    barbarian.update()
+    assert barbarian.get_hp() == 80
+    barbarian.update()
+    assert barbarian.get_hp() == 75
+    barbarian.update()
+    assert barbarian.get_hp() == 75
+
 def test_skills():
     fighter1 = Fighter(max_hp=100, max_mp=10, max_stamina=100)
     fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
