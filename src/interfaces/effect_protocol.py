@@ -1,8 +1,7 @@
 from typing import Protocol
-from .fighter_protocol import IFighter
 
-class IEffect():
-    def execute(self, target: IFighter) -> None:
+class IEffect(Protocol):
+    def execute(self, target: object) -> None:
         ...
 
     def get_duration(self) -> int:

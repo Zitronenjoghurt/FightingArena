@@ -1,3 +1,7 @@
+from typing import Optional
+from ..interfaces.effect_protocol import IEffect
+from ..interfaces.skill_protocol import ISkill
+
 class Fighter():
     def __init__(self,
                  max_hp: int = 0,
@@ -12,6 +16,7 @@ class Fighter():
         self.stamina = self.max_stamina
         
         self.effects = []
+        self.skills: dict[str, ISkill] = {}
 
     def update(self) -> None:
         self.execute_effects()
@@ -27,10 +32,33 @@ class Fighter():
             if effect_item["duration"] <= 0:
                 self.effects.remove(effect_item)
 
-    def apply_effect(self, effect) -> None:
+    def apply_effect(self, effect: IEffect) -> None:
         effect_item = {"effect": effect, "duration": effect.get_duration()}
         self.effects.append(effect_item)
 
+    def use_skill(self, skill_name: str, target: 'Fighter') -> None:
+        skill = self.get_skill(skill_name)
+        if skill is None:
+            return
+        
+        skill.use(target=target)
+
+    def skill_usable(self, skill_name: str) -> bool:
+        skill = self.get_skill(skill_name)
+        if skill is None:
+            return False
+        
+        return skill.is_usable()
+    
+    def add_skill(self, skill: ISkill) -> None:
+        self.skills[skill.get_name()] = skill
+    
+    def get_skill(self, skill_name: str) -> Optional[ISkill]:
+        return self.skills.get(skill_name, None)
+
+    def has_skill(self, skill_name: str) -> bool:
+        return self.get_skill(skill_name) is not None
+    
     def get_max_hp(self) -> int:
         return self.max_hp
     

@@ -1,4 +1,5 @@
 from src.classes.fighter import Fighter
+from src.classes.skill import Skill
 
 def test_init():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
@@ -11,6 +12,27 @@ def test_init():
 
     assert fighter.get_max_stamina() == 100
     assert fighter.get_stamina() == 100
+
+def test_skills():
+    fighter1 = Fighter(max_hp=100, max_mp=10, max_stamina=100)
+    fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+
+    fireball = Skill.create_skill("fireball", fighter1)
+    fighter1.add_skill(fireball)
+
+    assert fighter1.skill_usable("fireball") == True
+    fighter1.use_skill("fireball", fighter2)
+    assert fighter1.skill_usable("fireball") == False
+
+    assert fighter2.get_hp() == 90
+    fighter2.update()
+    assert fighter2.get_hp() == 85
+    fighter2.update()
+    assert fighter2.get_hp() == 80
+    fighter2.update()
+    assert fighter2.get_hp() == 75
+    fighter2.update()
+    assert fighter2.get_hp() == 75
 
 def test_setters():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)

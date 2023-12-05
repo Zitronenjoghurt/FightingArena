@@ -1,4 +1,6 @@
-from typing import Protocol
+from typing import Optional, Protocol
+from .effect_protocol import IEffect
+from .skill_protocol import ISkill
 
 class IFighter(Protocol):
     def update(self) -> None:
@@ -7,7 +9,22 @@ class IFighter(Protocol):
     def execute_effects(self) -> None:
         ...
 
-    def apply_effect(self, effect) -> None:
+    def apply_effect(self, effect: IEffect) -> None:
+        ...
+
+    def use_skill(self, skill_name: str, target: 'IFighter') -> None:
+        ...
+
+    def skill_usable(self, skill_name: str) -> bool:
+        ...
+    
+    def add_skill(self, skill: ISkill) -> None:
+        ...
+    
+    def get_skill(self, skill_name: str) -> Optional[ISkill]:
+        ...
+
+    def has_skill(self, skill_name: str) -> bool:
         ...
 
     def get_max_hp(self) -> int:

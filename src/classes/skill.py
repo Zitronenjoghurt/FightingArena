@@ -32,7 +32,8 @@ class SkillLibrary():
         return self.library.get(skill_name, None)
 
 class Skill():
-    def __init__(self, user: IFighter, actions: dict[dict], effects: dict[dict]) -> None:
+    def __init__(self, name: str, user: IFighter, actions: dict[dict], effects: dict[dict]) -> None:
+        self.name = name
         self.user: IFighter = user
 
         self.actions: list[IAction] = []
@@ -47,6 +48,7 @@ class Skill():
 
     @staticmethod
     def create_skill(skill_name: str, fighter: IFighter) -> 'Skill':
+        skill_name = skill_name.lower()
         library = SkillLibrary()
         skill = library.get_skill_data(skill_name)
 
@@ -59,7 +61,7 @@ class Skill():
         if actions is None or effects is None:
             raise ValueError(f"Invalid data for skill {skill_name}")
         
-        return Skill(user=fighter, actions=actions, effects=effects)
+        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects)
 
     def use(self, target: IFighter) -> None:
         for action in self.actions:
@@ -74,3 +76,6 @@ class Skill():
             if not action.is_executable():
                 usable = False
         return usable
+    
+    def get_name(self) -> str:
+        return self.name

@@ -1,13 +1,15 @@
 from typing import Protocol
-from .fighter_protocol import IFighter
 
 class ISkill(Protocol):
     @staticmethod
-    def create_skill(skill_name: str, fighter: IFighter) -> 'ISkill':
+    def create_skill(skill_name: str, fighter: object) -> 'ISkill':
         ...
 
-    def use(self, target: IFighter) -> None:
+    def use(self, target: object) -> None:
         ...
 
     def is_usable(self) -> bool:
+        ...
+
+    def get_name(self) -> str:
         ...
