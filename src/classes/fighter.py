@@ -86,12 +86,12 @@ class Fighter():
         effect_item = {"effect": effect, "duration": effect.get_duration()}
         self.effects.append(effect_item)
 
-    def use_skill(self, skill_name: str, target: 'Fighter') -> None:
+    def use_skill(self, skill_name: str, target: 'Fighter') -> bool:
         skill = self.get_skill(skill_name)
         if skill is None:
-            return
+            return False
         
-        skill.use(target=target)
+        return skill.use(target=target)
 
     def skill_usable(self, skill_name: str) -> bool:
         skill = self.get_skill(skill_name)
@@ -101,6 +101,7 @@ class Fighter():
         return skill.is_usable()
     
     def add_skill(self, skill: ISkill) -> None:
+        skill.add_user(self)
         self.skills[skill.get_name()] = skill
     
     def get_skill(self, skill_name: str) -> Optional[ISkill]:

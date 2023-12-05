@@ -27,11 +27,11 @@ def test_load_from_file():
     assert wizard.get_stamina() == 20
     assert wizard.skill_usable("fireball") == True
 
-    barbarian.use_skill("sword slash", wizard)
+    assert barbarian.use_skill("sword slash", wizard) == True
     assert barbarian.get_stamina() == 90
     assert wizard.get_hp() == 65
 
-    wizard.use_skill("fireball", barbarian)
+    assert wizard.use_skill("fireball", barbarian) == True
     assert wizard.get_mp() == 90
     assert barbarian.get_hp() == 90
     barbarian.update()
@@ -51,7 +51,7 @@ def test_skills():
     fighter1.add_skill(fireball)
 
     assert fighter1.skill_usable("fireball") == True
-    fighter1.use_skill("fireball", fighter2)
+    assert fighter1.use_skill("fireball", fighter2) == True
     assert fighter1.skill_usable("fireball") == False
 
     assert fighter2.get_hp() == 90

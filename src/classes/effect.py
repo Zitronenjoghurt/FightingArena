@@ -6,8 +6,13 @@ class Effect():
 
     def get_duration(self) -> int:
         return self.duration
+    
+    def get_categories(self) -> list[str]:
+        return self.categories
 
 class BurnEffect(Effect):
+    categories = ["burn"]
+
     def __init__(self, duration: int, damage: int) -> None:
         self.duration = duration
         self.damage = damage

@@ -32,22 +32,30 @@ class SkillLibrary():
         return self.library.get(skill_name, None)
 
 class Skill():
-    def __init__(self, name: str, user: IFighter, actions: dict[dict], effects: dict[dict]) -> None:
+    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[dict]] = None, effects: Optional[dict[dict]] = None) -> None:
+        if actions is None:
+            actions = {}
+        if effects is None:
+            effects = {}
+
         self.name = name
-        self.user: IFighter = user
+        self.user: Optional[IFighter] = user
+        self.categories = []
 
         self.actions: list[IAction] = []
         for action_type, action_args in actions.items():
             action = ActionFactory.create_action(action_type=action_type, action_args=action_args, user=self.user)
+            self.add_categories(action.get_categories())
             self.actions.append(action)
 
         self.effects: list[IEffect] = []
         for effect_type, effect_args in effects.items():
             effect = EffectFactory.create_effect(effect_type=effect_type, effect_args=effect_args)
+            self.add_categories(effect.get_categories())
             self.effects.append(effect)
 
     @staticmethod
-    def create_skill(skill_name: str, fighter: IFighter) -> 'Skill':
+    def create_skill(skill_name: str, fighter: Optional[IFighter] = None) -> 'Skill':
         skill_name = skill_name.lower()
         library = SkillLibrary()
         skill = library.get_skill_data(skill_name)
@@ -63,14 +71,25 @@ class Skill():
         
         return Skill(name=skill_name, user=fighter, actions=actions, effects=effects)
 
-    def use(self, target: IFighter) -> None:
+    def use(self, target: IFighter) -> bool:
+        if not self.is_usable():
+            return False
+        
+        succeeded = True
         for action in self.actions:
-            action.execute(target)
+            status = action.execute(target)
+            if status == False:
+                succeeded = False
         
         for effect in self.effects:
             target.apply_effect(effect)
 
+        return succeeded
+
     def is_usable(self) -> bool:
+        if self.user is None:
+            return False
+        
         usable = True
         for action in self.actions:
             if not action.is_executable():
@@ -79,3 +98,16 @@ class Skill():
     
     def get_name(self) -> str:
         return self.name
+    
+    def get_categories(self) -> list[str]:
+        return self.categories
+    
+    def add_categories(self, categories: list[str]) -> None:
+        for category in categories:
+            if category not in self.categories:
+                self.categories.append(category)
+
+    def add_user(self, user: IFighter) -> None:
+        self.user = user
+        for action in self.actions:
+            action.add_user(user)

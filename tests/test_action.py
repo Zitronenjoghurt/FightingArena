@@ -9,11 +9,11 @@ def test_attack():
     attack2 = ActionFactory.create_action(action_type="attack", action_args={"damage": 25}, user=fighter2)
 
     assert attack1.is_executable() == True
-    attack1.execute(fighter2)
+    assert attack1.execute(fighter2) == True
     assert fighter2.get_hp() == 90
 
     assert attack2.is_executable() == True
-    attack2.execute(fighter1)
+    assert attack2.execute(fighter1) == True
     assert fighter1.get_hp() == 75
     
 
@@ -29,14 +29,14 @@ def test_heal():
 
     # heal 1
     assert heal1.is_executable() == True
-    heal1.execute(fighter1)
+    assert heal1.execute(fighter1) == True
     assert fighter1.get_hp() == 100
     assert fighter1.get_mp() == 10
     assert heal1.is_executable() == False
 
     # heal 2
     assert heal2.is_executable() == True
-    heal2.execute(fighter2)
+    assert heal2.execute(fighter2) == True
     assert fighter2.get_hp() == 100
     assert fighter2.get_mp() == 20
     assert heal2.is_executable() == False
@@ -53,7 +53,7 @@ def test_lifesteal():
 
     # lifesteal 1
     assert lifesteal1.is_executable() == True
-    lifesteal1.execute(fighter2)
+    assert lifesteal1.execute(fighter2) == True
     assert fighter1.get_hp() == 70
     assert fighter1.get_mp() == 40
     assert fighter2.get_hp() == 40
@@ -61,7 +61,7 @@ def test_lifesteal():
 
     # lifesteal 2
     assert lifesteal2.is_executable() == True
-    lifesteal2.execute(fighter1)
+    assert lifesteal2.execute(fighter1) == True
     assert fighter1.get_hp() == 60
     assert fighter2.get_hp() == 60
     assert fighter2.get_mp() == 40

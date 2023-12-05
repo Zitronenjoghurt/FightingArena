@@ -23,7 +23,7 @@ class IFighter(Protocol):
     def apply_effect(self, effect: IEffect) -> None:
         ...
 
-    def use_skill(self, skill_name: str, target: 'IFighter') -> None:
+    def use_skill(self, skill_name: str, target: 'IFighter') -> bool:
         ...
 
     def skill_usable(self, skill_name: str) -> bool:
