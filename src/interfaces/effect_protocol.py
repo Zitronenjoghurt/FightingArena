@@ -6,3 +6,6 @@ class IEffect(Protocol):
 
     def get_duration(self) -> int:
         ...
+
+    def get_categories(self) -> list[str]:
+        ...

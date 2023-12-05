@@ -11,6 +11,9 @@ class IAction(Protocol):
     def remove_costs(self) -> None:
         ...
 
+    def has_costs(self) -> bool:
+        ...
+
     def get_categories(self) -> list[str]:
         ...
 

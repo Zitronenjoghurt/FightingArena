@@ -17,9 +17,6 @@ class ISkill(Protocol):
     def get_categories(self) -> list[str]:
         ...
 
-    def get_categories(self) -> list[str]:
-        ...
-
     def add_categories(self, categories: list[str]) -> None:
         ...
 
