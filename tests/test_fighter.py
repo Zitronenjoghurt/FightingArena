@@ -34,6 +34,8 @@ def test_load_from_file():
     assert wizard.use_skill("fireball", barbarian) == True
     assert wizard.get_mp() == 90
     assert barbarian.get_hp() == 90
+
+    # fireball burn damage
     barbarian.update()
     assert barbarian.get_hp() == 85
     barbarian.update()
