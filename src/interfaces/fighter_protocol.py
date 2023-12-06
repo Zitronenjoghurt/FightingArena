@@ -17,6 +17,9 @@ class IFighter(Protocol):
     def update(self) -> None:
         ...
 
+    def get_next_move(self) -> Optional[tuple[ISkill, 'IFighter']]:
+        ...
+
     def execute_effects(self) -> None:
         ...
 

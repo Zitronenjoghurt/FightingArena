@@ -61,8 +61,19 @@ class GameManager():
     def get_team_fighters(self, team_name: str) -> list[IFighter]:
         return self.teams.get(team_name, [])
 
+    def get_fighter_team(self, fighter: IFighter) -> Optional[str]:
+        for team_name, fighters in self.teams.items():
+            if fighter in fighters:
+                return team_name
+        return None
+
     def get_fighters(self) -> list[IFighter]:
         fighters = []
         for fighter_list in self.teams.values():
             fighters.extend(fighter_list)
         return fighters
+    
+    def get_opponents(self, fighter: IFighter) -> list[IFighter]:
+        fighter_team = self.get_fighter_team(fighter)
+        opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters]
+        return opponents

@@ -48,3 +48,35 @@ def test_get_team_name():
     assert gm.get_team_names() == ["A", "B"]
 
     gm.reset_instance()
+
+def test_get_fighter_team():
+    barbarian1 = Fighter.load_from_file("barbarian")
+    barbarian2 = Fighter.load_from_file("barbarian")
+    wizard1 = Fighter.load_from_file("wizard")
+    wizard2 = Fighter.load_from_file("wizard")
+
+    teams = {"A": [barbarian1, barbarian2], "B": [wizard1, wizard2]}
+    gm = GameManager.get_instance(teams=teams)
+
+    assert gm.get_fighter_team(barbarian1) == "A"
+    assert gm.get_fighter_team(barbarian2) == "A"
+    assert gm.get_fighter_team(wizard1) == "B"
+    assert gm.get_fighter_team(wizard2) == "B"
+    
+    gm.reset_instance()
+
+def test_get_opponents():
+    barbarian1 = Fighter.load_from_file("barbarian")
+    barbarian2 = Fighter.load_from_file("barbarian")
+    wizard1 = Fighter.load_from_file("wizard")
+    wizard2 = Fighter.load_from_file("wizard")
+
+    teams = {"A": [barbarian1, barbarian2], "B": [wizard1, wizard2]}
+    gm = GameManager.get_instance(teams=teams)
+
+    assert gm.get_opponents(barbarian1) == [wizard1, wizard2]
+    assert gm.get_opponents(barbarian2) == [wizard1, wizard2]
+    assert gm.get_opponents(wizard1) == [barbarian1, barbarian2]
+    assert gm.get_opponents(wizard2) == [barbarian1, barbarian2]
+
+    gm.reset_instance()

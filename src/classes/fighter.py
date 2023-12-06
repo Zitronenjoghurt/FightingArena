@@ -1,7 +1,8 @@
 import json
 import os
 from typing import Optional
-from ..classes.skill import Skill
+from .ai_behavior import AIBehavior, AIBehaviorFactory
+from .skill import Skill
 from ..interfaces.effect_protocol import IEffect
 from ..interfaces.skill_protocol import ISkill
 
@@ -12,7 +13,8 @@ class Fighter():
     def __init__(self,
                  max_hp: int = 0,
                  max_mp: int = 0,
-                 max_stamina: int = 0
+                 max_stamina: int = 0,
+                 behavior_name: str = "random"
                  ) -> None:
         if not self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina):
             raise ValueError(f"Invalid init parameters for fighter class.")
@@ -29,6 +31,8 @@ class Fighter():
 
         self.usable_skill_categories = []
         self.usable_category_skills: dict[str, ISkill] = {}
+
+        self.behavior: AIBehavior = AIBehaviorFactory.create_behavior(behavior_name=behavior_name, fighter=self)
 
     @staticmethod
     def load_from_file(fighter_name: str) -> 'Fighter':
@@ -79,6 +83,14 @@ class Fighter():
         self.hp = min(self.hp, self.max_hp)
         self.mp = min(self.mp, self.max_mp)
         self.stamina = min(self.stamina, self.max_stamina)
+
+    def get_next_move(self) -> Optional[tuple[ISkill, 'Fighter']]:
+        skill, opponent = self.behavior.select_skill_and_opponent()
+
+        if not skill or not opponent:
+            return None
+        
+        return skill, opponent
 
     def execute_effects(self) -> None:
         for effect_item in self.effects:
