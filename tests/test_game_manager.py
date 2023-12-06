@@ -13,7 +13,6 @@ def test_init():
     assert gm2.get_team_names() == ["A", "B"]
 
     gm1.reset_instance()
-    gm2.reset_instance()
 
 def test_add_teams():
     barbarian1 = Fighter.load_from_file("barbarian")

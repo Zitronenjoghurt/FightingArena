@@ -1,16 +1,19 @@
+import time
 from typing import Optional
 from ..interfaces.fighter_protocol import IFighter
 
 class GameManager():
     _instance = None
     
-    def __init__(self, teams: dict[str, list[IFighter]] = {}) -> None:
+    def __init__(self, teams: dict[str, list[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000) -> None:
         if GameManager._instance is not None:
             return
         
         self.teams: dict[str, list[IFighter]] = {}
         self.running = False
         self.round = 0
+        self.max_rounds = max_rounds
+        self.round_time = round_time
 
         self.add_teams(teams=teams)
 
@@ -23,6 +26,21 @@ class GameManager():
     @staticmethod
     def reset_instance() -> None:
         GameManager._instance = None
+
+    def start_game(self) -> None:
+        self.running = True
+        while self.running and self.round <= self.max_rounds:
+            self.run()
+            self.round += 1
+            time.sleep(self.round_time)
+
+    def run(self) -> None:
+        self.round += 1
+        print(f"Round {self.round}: Test")
+        time.sleep(self.round_time)
+
+    def stop_game(self) -> None:
+        self.running = False
 
     def add_teams(self, teams: dict[str, list[IFighter]]) -> None:
         for team, fighters in teams.items():
