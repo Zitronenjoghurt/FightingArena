@@ -27,6 +27,9 @@ class Fighter():
         self.effects = []
         self.skills: dict[str, ISkill] = {}
 
+        self.usable_skill_categories = []
+        self.usable_category_skills: dict[str, ISkill] = {}
+
     @staticmethod
     def load_from_file(fighter_name: str) -> 'Fighter':
         fighter_file_path = os.path.join(FIGHTERS_FILE_PATH, f"{fighter_name}.json")
@@ -60,6 +63,7 @@ class Fighter():
             skill = Skill.create_skill(skill_name=skill_name, fighter=fighter)
             fighter.add_skill(skill=skill)
 
+        fighter.update()
         return fighter
         
     def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int) -> bool:
@@ -69,6 +73,8 @@ class Fighter():
         return True
 
     def update(self) -> None:
+        self.update_usable_skills()
+
         self.execute_effects()
         self.hp = min(self.hp, self.max_hp)
         self.mp = min(self.mp, self.max_mp)
@@ -103,9 +109,35 @@ class Fighter():
     def add_skill(self, skill: ISkill) -> None:
         skill.add_user(self)
         self.skills[skill.get_name()] = skill
+
+    def add_skills(self, skills: list[ISkill]) -> None:
+        for skill in skills:
+            self.add_skill(skill)
     
     def get_skill(self, skill_name: str) -> Optional[ISkill]:
         return self.skills.get(skill_name, None)
+    
+    def get_skills(self) -> list[ISkill]:
+        return list(self.skills.values())
+    
+    def get_usable_skills(self) -> list[ISkill]:
+        return [skill for skill in self.get_skills() if skill.is_usable()]
+    
+    def get_usable_skill_categories(self) -> list[str]:
+        return self.usable_skill_categories
+    
+    def get_usable_category_skills(self) -> dict[str, list[ISkill]]:
+        return self.usable_category_skills
+    
+    def update_usable_skills(self) -> None:
+        result = {}
+        for skill in self.get_usable_skills():
+            for category in skill.get_categories():
+                if category not in result:
+                    result[category] = []
+                result[category].append(skill)
+        self.usable_category_skills = result
+        self.usable_skill_categories = list(result.keys())
 
     def has_skill(self, skill_name: str) -> bool:
         return self.get_skill(skill_name) is not None

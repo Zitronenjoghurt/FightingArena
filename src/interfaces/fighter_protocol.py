@@ -31,8 +31,26 @@ class IFighter(Protocol):
     
     def add_skill(self, skill: ISkill) -> None:
         ...
+
+    def add_skills(self, skills: list[ISkill]) -> None:
+        ...
     
     def get_skill(self, skill_name: str) -> Optional[ISkill]:
+        ...
+
+    def get_skills(self) -> list[ISkill]:
+        ...
+    
+    def get_usable_skills(self) -> list[ISkill]:
+        ...
+
+    def get_usable_skill_categories(self) -> list[str]:
+        ...
+    
+    def get_usable_category_skills(self) -> dict[str, list[ISkill]]:
+        ...
+    
+    def update_usable_skills_by_category(self) -> dict[str, list[ISkill]]:
         ...
 
     def has_skill(self, skill_name: str) -> bool:

@@ -147,3 +147,33 @@ def test_update():
     assert fighter.get_hp() == 20
     assert fighter.get_mp() == 20
     assert fighter.get_stamina() == 20
+
+def test_get_usable_skills():
+    fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+    fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+
+    skill1 = Skill(name="stamina_drain", actions={"attack": {"damage": 10, "stamina_cost": 100}})
+    skill2 = Skill(name="mp_drain", actions={"attack": {"damage": 10, "mp_cost": 100}})
+
+    fighter1.add_skills([skill1, skill2])
+    assert fighter1.get_skills() == [skill1, skill2]
+
+    fighter1.update()
+
+    assert fighter1.get_usable_skills() == [skill1, skill2]
+    assert fighter1.get_usable_skill_categories() == ["damage"]
+    assert fighter1.get_usable_category_skills() == {"damage": [skill1, skill2]}
+
+    fighter1.use_skill("stamina_drain", fighter2)
+    fighter1.update()
+
+    assert fighter1.get_usable_skills() == [skill2]
+    assert fighter1.get_usable_skill_categories() == ["damage"]
+    assert fighter1.get_usable_category_skills() == {"damage": [skill2]}
+
+    fighter1.use_skill("mp_drain", fighter2)
+    fighter1.update()
+
+    assert fighter1.get_usable_skills() == []
+    assert fighter1.get_usable_skill_categories() == []
+    assert fighter1.get_usable_category_skills() == {}
