@@ -5,7 +5,7 @@ class ISkill(Protocol):
     def create_skill(skill_name: str, fighter: object) -> 'ISkill':
         ...
 
-    def use(self, target: object) -> bool:
+    def use(self, target: object) -> tuple[bool, str]:
         ...
 
     def is_usable(self) -> bool:

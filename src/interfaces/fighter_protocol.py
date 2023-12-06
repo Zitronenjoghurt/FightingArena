@@ -4,7 +4,7 @@ from .skill_protocol import ISkill
 
 class IFighter(Protocol):
     @staticmethod
-    def load_from_file(fighter_name: str) -> 'IFighter':
+    def load_from_file(fighter_class_name: str, fighter_name: str = "no_name") -> 'IFighter':
         ...
 
     @staticmethod
@@ -14,16 +14,19 @@ class IFighter(Protocol):
     def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int) -> bool:
         ...
 
-    def update(self) -> None:
+    def update(self) -> list[str]:
         ...
 
-    def get_next_move(self) -> Optional[tuple[ISkill, 'IFighter']]:
+    def get_next_move(self) -> tuple[ISkill, 'IFighter']:
         ...
 
-    def execute_effects(self) -> None:
+    def get_status(self) -> str:
         ...
 
-    def apply_effect(self, effect: IEffect) -> None:
+    def execute_effects(self) -> list[str]:
+        ...
+
+    def apply_effect(self, effect: IEffect) -> str:
         ...
 
     def use_skill(self, skill_name: str, target: 'IFighter') -> bool:
@@ -57,6 +60,9 @@ class IFighter(Protocol):
         ...
 
     def has_skill(self, skill_name: str) -> bool:
+        ...
+
+    def get_name(self) -> str:
         ...
 
     def get_max_hp(self) -> int:

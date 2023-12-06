@@ -32,13 +32,14 @@ class SkillLibrary():
         return self.library.get(skill_name, None)
 
 class Skill():
-    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[dict]] = None, effects: Optional[dict[dict]] = None) -> None:
+    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[dict]] = None, effects: Optional[dict[dict]] = None, message: str = "") -> None:
         if actions is None:
             actions = {}
         if effects is None:
             effects = {}
 
         self.name = name
+        self.message = message
         self.user: Optional[IFighter] = user
         self.categories = []
 
@@ -65,26 +66,33 @@ class Skill():
         
         actions = skill.get("actions", None)
         effects = skill.get("effects", None)
+        message = skill.get("message", None)
 
-        if actions is None or effects is None:
+        if actions is None or effects is None or message is None:
             raise ValueError(f"Invalid data for skill {skill_name}")
         
-        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects)
+        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message)
 
-    def use(self, target: IFighter) -> bool:
-        if not self.is_usable():
-            return False
-        
+    def use(self, target: IFighter) -> tuple[bool, str]:
         succeeded = True
-        for action in self.actions:
-            status = action.execute(target)
-            if status == False:
-                succeeded = False
-        
-        for effect in self.effects:
-            target.apply_effect(effect)
+        effect_messages = []
 
-        return succeeded
+        if not self.is_usable():
+            succeeded = False
+        else:
+            for action in self.actions:
+                status = action.execute(target)
+                if status == False:
+                    succeeded = False
+            
+            for effect in self.effects:
+                message = "\n" + target.apply_effect(effect)
+                effect_messages.append(message)
+
+        if succeeded:
+            return True, self.message.format(user=self.user.get_name(), opponent=target.get_name()) + "".join(effect_messages)
+        else:
+            return False, f"{self.user.get_name()} tried to use {self.get_name()} against {target.get_name()}, but it failed."
 
     def is_usable(self) -> bool:
         if self.user is None:

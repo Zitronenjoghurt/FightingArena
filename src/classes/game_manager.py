@@ -28,16 +28,63 @@ class GameManager():
         GameManager._instance = None
 
     def start_game(self) -> None:
+        print("====={FIGHT START}=====")
+        for team_name, fighters in self.teams.items():
+            print(f"Team {team_name}: " + ",".join([fighter.get_name() for fighter in fighters]))
+        print("====={FIGHT START}=====")
+        
         self.running = True
         while self.running and self.round <= self.max_rounds:
-            self.run()
             self.round += 1
+            self.run()
             time.sleep(self.round_time)
 
     def run(self) -> None:
-        self.round += 1
-        print(f"Round {self.round}: Test")
+        print(f"\nROUND {self.round}:")
+        fighters = self.get_fighters()
+
+        for fighter in fighters:
+            self.run_fighter_turn(fighter)
+        
+        for fighter in fighters:
+            effect_messages = fighter.update()
+            for message in effect_messages:
+                print(message)
+
+        print("==========")
+
+        for fighter in fighters:
+            print(fighter.get_status())
+        
+        print("==========")
+
+        self.check_win_condition()
+
         time.sleep(self.round_time)
+
+    def run_fighter_turn(self, fighter: IFighter) -> None:
+        skill, opponent = fighter.get_next_move()
+
+        if not skill:
+            print(f"{fighter.get_name()} has no usable skill.")
+            return
+        
+        if not opponent:
+            print(f"{fighter.get_name()} has no opponent.")
+            return
+        
+        success, message = skill.use(target=opponent)
+        print(message)
+
+    def check_win_condition(self) -> None:
+        for fighter in self.get_fighters():
+            opponents = self.get_opponents(fighter)
+            if len(opponents) == 0:
+                self.finish_game(self.get_fighter_team(fighter))
+
+    def finish_game(self, team_name: str) -> None:
+        print(f"\nTEAM {team_name} WINS!!!")
+        self.stop_game()
 
     def stop_game(self) -> None:
         self.running = False
@@ -75,5 +122,5 @@ class GameManager():
     
     def get_opponents(self, fighter: IFighter) -> list[IFighter]:
         fighter_team = self.get_fighter_team(fighter)
-        opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters]
+        opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters if fighter.get_hp() > 0]
         return opponents

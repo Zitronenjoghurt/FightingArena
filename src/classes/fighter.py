@@ -14,11 +14,13 @@ class Fighter():
                  max_hp: int = 0,
                  max_mp: int = 0,
                  max_stamina: int = 0,
+                 name: str = "no_name",
                  behavior_name: str = "random"
                  ) -> None:
         if not self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina):
             raise ValueError(f"Invalid init parameters for fighter class.")
         
+        self.name = name
         self.max_hp = max_hp
         self.hp = self.max_hp
         self.max_mp = max_mp
@@ -26,7 +28,7 @@ class Fighter():
         self.max_stamina = max_stamina
         self.stamina = self.max_stamina
         
-        self.effects = []
+        self.effects = {}
         self.skills: dict[str, ISkill] = {}
 
         self.usable_skill_categories = []
@@ -35,15 +37,16 @@ class Fighter():
         self.behavior: AIBehavior = AIBehaviorFactory.create_behavior(behavior_name=behavior_name, fighter=self)
 
     @staticmethod
-    def load_from_file(fighter_name: str) -> 'Fighter':
-        fighter_file_path = os.path.join(FIGHTERS_FILE_PATH, f"{fighter_name}.json")
+    def load_from_file(fighter_class_name: str, fighter_name: str = "no_name") -> 'Fighter':
+        fighter_file_path = os.path.join(FIGHTERS_FILE_PATH, f"{fighter_class_name}.json")
 
         try:
             with open(fighter_file_path, 'r') as f:
                 data = json.load(f)
+                data["name"] = fighter_name
             return Fighter.create_from_dict(data)
         except FileNotFoundError:
-            raise ValueError(f"Fighter {fighter_name} does not exist. Make sure {fighter_file_path} exists.")
+            raise ValueError(f"Fighter class {fighter_class_name} does not exist. Make sure {fighter_file_path} exists.")
 
     @staticmethod
     def create_from_dict(data: dict) -> 'Fighter':
@@ -51,6 +54,7 @@ class Fighter():
         max_mp = data.get("max_mp", None)
         max_stamina = data.get("max_stamina", None)
         skills = data.get("skills", None)
+        name = data.get("name", "no_name")
 
         if any(var is None for var in [max_hp, max_mp, max_stamina, skills]):
             raise ValueError(f"Fighter data is incomplete.")
@@ -58,7 +62,7 @@ class Fighter():
         if not isinstance(skills, list):
             raise ValueError(f"Fighter overall skill data is invalid.\n{skills}")
         
-        fighter = Fighter(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina)
+        fighter = Fighter(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, name=name)
 
         for skill_data in skills:
             skill_name = skill_data.get("name", None)
@@ -76,33 +80,50 @@ class Fighter():
         
         return True
 
-    def update(self) -> None:
+    def update(self) -> list[str]:
         self.update_usable_skills()
 
-        self.execute_effects()
+        effect_messages = self.execute_effects()
         self.hp = min(self.hp, self.max_hp)
         self.mp = min(self.mp, self.max_mp)
         self.stamina = min(self.stamina, self.max_stamina)
 
-    def get_next_move(self) -> Optional[tuple[ISkill, 'Fighter']]:
-        skill, opponent = self.behavior.select_skill_and_opponent()
+        return effect_messages
 
-        if not skill or not opponent:
-            return None
+    def get_next_move(self) -> tuple[ISkill, 'Fighter']:
+        skill, opponent = self.behavior.select_skill_and_opponent()
         
         return skill, opponent
+    
+    def get_status(self) -> str:
+        return f"[{self.name}] {self.get_hp()}HP | {self.get_mp()}MP | {self.get_stamina()}ST"
 
-    def execute_effects(self) -> None:
-        for effect_item in self.effects:
-            effect_item["effect"].execute(self)
+    def execute_effects(self) -> list[str]:
+        messages = []
+        remove_effects = []
+        for effect_item in self.effects.values():
+            message = effect_item["effect"].execute(self)
             effect_item["duration"] -= 1
+            messages.append(message)
 
             if effect_item["duration"] <= 0:
-                self.effects.remove(effect_item)
+                remove_effects.append(effect_item["effect"].get_name())
+        
+        for effect_name in remove_effects:
+            self.effects.pop(effect_name)
+            messages.append(f"{self.get_name()} lost effect: {effect_name}")
+            
+        return messages
 
-    def apply_effect(self, effect: IEffect) -> None:
+    def apply_effect(self, effect: IEffect) -> str:
+        effect_name = effect.get_name()
+
+        if effect_name in self.effects:
+            return f"{self.get_name()} already has effect: {effect_name}"
+
         effect_item = {"effect": effect, "duration": effect.get_duration()}
-        self.effects.append(effect_item)
+        self.effects[effect_name] = effect_item
+        return f"{self.get_name()} received effect: {effect_name}"
 
     def use_skill(self, skill_name: str, target: 'Fighter') -> bool:
         skill = self.get_skill(skill_name)
@@ -154,6 +175,9 @@ class Fighter():
     def has_skill(self, skill_name: str) -> bool:
         return self.get_skill(skill_name) is not None
     
+    def get_name(self) -> str:
+        return self.name
+
     def get_max_hp(self) -> int:
         return self.max_hp
     
