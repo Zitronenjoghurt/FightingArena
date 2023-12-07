@@ -1,4 +1,5 @@
 import time
+from tabulate import tabulate
 from typing import Optional
 from ..interfaces.fighter_protocol import IFighter
 
@@ -7,6 +8,7 @@ LOG_OUTPUT_FILE_PATH = "output.txt"
 class GameManager():
     _instance = None
 
+    LOG_DEBUG_FIGHTER_STATUS_RAW = "debug_fighter_status_raw"
     LOG_EFFECT_APPLY = "effect_apply"
     LOG_EFFECT_EXECUTE = "effect_execute"
     LOG_EFFECT_REMOVE = "effect_remove"
@@ -64,11 +66,14 @@ class GameManager():
         for fighter in fighters:
             self.run_fighter_turn(fighter)
         
+        fighter_status_headers = ["Name", "HP", "MP", "Stamina"]
+        fighter_statuses = []
         for fighter in fighters:
             fighter.update()
+            fighter_statuses.append(fighter.get_status())
 
-        for fighter in fighters:
-            self.log_message(self.LOG_FIGHTER_STATUS, fighter.get_status())
+        self.log_message(self.LOG_DEBUG_FIGHTER_STATUS_RAW, fighter_statuses)
+        self.log_message(self.LOG_FIGHTER_STATUS, tabulate(fighter_statuses, fighter_status_headers, tablefmt="grid", stralign="right"))
 
         winning_teams = self.check_win_condition()
         if len(winning_teams) > 0:
@@ -118,10 +123,10 @@ class GameManager():
 
     def get_round_message(self, round: int) -> None:
         round_message = [
+            "==================================================",
             self.log.get_logs_string(round, [self.LOG_GAME_STATUS_TOP]),
-            "==================================================",
             self.log.get_logs_string(round, [self.LOG_FIGHTER_STATUS]),
-            "==================================================",
+            "",
             self.log.get_logs_string(round, [self.LOG_SKILL_USE, self.LOG_EFFECT_APPLY, self.LOG_EFFECT_EXECUTE, self.LOG_EFFECT_REMOVE, self.LOG_GAME_FINISH]),
             "==================================================\n",
         ]

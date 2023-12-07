@@ -104,8 +104,8 @@ class Fighter():
         
         return skill, opponent
     
-    def get_status(self) -> str:
-        return f"[{self.name}] {self.get_hp()}HP({self.previous_hp_difference}) | {self.get_mp()}MP({self.previous_mp_difference}) | {self.get_stamina()}ST({self.previous_stamina_difference})"
+    def get_status(self) -> list[str]:
+        return [f"[{self.name}]", f"{self.get_hp()} ({self.previous_hp_difference})", f"{self.get_mp()} ({self.previous_mp_difference})", f"{self.get_stamina()} ({self.previous_stamina_difference})"]
 
     def execute_effects(self) -> None:
         if len(self.effects) == 0:
