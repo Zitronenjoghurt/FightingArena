@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 from .game_manager import GameManager
 from ..interfaces.fighter_protocol import IFighter
 from ..interfaces.skill_protocol import ISkill
@@ -12,12 +13,18 @@ class AIBehavior():
         opponent = self.select_random_opponent()
         return skill, opponent
     
-    def select_random_skill(self) -> ISkill:
-        return random.choice([self.fighter.get_skills()])[0]
+    def select_random_skill(self) -> Optional[ISkill]:
+        skills = random.choice([self.fighter.get_usable_skills()])
+        if len(skills) == 0:
+            return None
+        return skills[0]
 
-    def select_random_opponent(self) -> IFighter:
+    def select_random_opponent(self) -> Optional[IFighter]:
         gm = GameManager.get_instance()
-        return random.choice([gm.get_opponents(self.fighter)])[0]
+        opponents = random.choice([gm.get_opponents(self.fighter)])
+        if len(opponents) == 0:
+            return None
+        return opponents[0]
 
 class SimpleAIBehavior(AIBehavior):
     pass
