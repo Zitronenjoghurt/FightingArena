@@ -50,4 +50,4 @@ def test_get_categories():
     fireball = Skill.create_skill(skill_name="debug fireball")
 
     assert sword_slash.get_categories() == ["damage"]
-    assert fireball.get_categories() == ["damage", "burn"]
+    assert fireball.get_categories() == ["damage", "burning"]

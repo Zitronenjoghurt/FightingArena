@@ -4,9 +4,17 @@ class Effect():
     name = ""
     categories = []
     message = ""
+
+    DISALLOW_ATTACK_EFFECTS = ["frozen"]
     
     def execute(self, target: IFighter) -> str:
         return ""
+    
+    def on_apply(self, target: IFighter) -> None:
+        pass
+    
+    def on_remove(self, target: IFighter) -> None:
+        pass
 
     def get_duration(self) -> int:
         return self.duration
@@ -18,8 +26,8 @@ class Effect():
         return self.name
 
 class BurnEffect(Effect):
-    name = "burn"
-    categories = ["burn"]
+    name = "burning"
+    categories = ["burning"]
     message = "{target} is burning, -{damage}HP"
 
     def __init__(self, duration: int, damage: int) -> None:
@@ -29,10 +37,31 @@ class BurnEffect(Effect):
     def execute(self, target: IFighter) -> str:
         target.remove_hp(self.damage)
         return self.message.format(target=target.get_name(), damage=self.damage)
+    
+class FreezeEffect(Effect):
+    name = "frozen"
+    categories = ["frozen"]
+    message = "{target} is frozen and unable to attack."
+
+    def __init__(self, duration: int) -> None:
+        self.duration = duration
+
+    def execute(self, target: IFighter) -> str:
+        if not target.has_attacked():
+            return self.message.format(target=target.get_name())
+        return ""
+    
+    def on_apply(self, target: IFighter) -> None:
+        target.disallow_attack()
+    
+    def on_remove(self, target: IFighter) -> None:
+        if not target.has_effects(self.DISALLOW_ATTACK_EFFECTS):
+            target.allow_attack()
 
 class EffectFactory():
     registry = {
-        "burn": BurnEffect
+        "burn": BurnEffect,
+        "freeze": FreezeEffect
     }
 
     @staticmethod

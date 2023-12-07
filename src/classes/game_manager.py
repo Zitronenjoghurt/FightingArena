@@ -85,6 +85,9 @@ class GameManager():
     def run_fighter_turn(self, fighter: IFighter) -> None:
         skill, opponent = fighter.get_next_move()
 
+        if not fighter.can_attack():
+            return
+
         if not skill:
             message = f"{fighter.get_name()} has no usable skill."
             self.log_message(self.LOG_SKILL_USE, message)
@@ -97,6 +100,8 @@ class GameManager():
         
         success, message = skill.use(target=opponent)
         self.log_message(self.LOG_SKILL_USE, message=message)
+        if success:
+            fighter.set_has_attacked(True)
 
     def check_win_condition(self) -> set[str]:
         winning_teams = set()

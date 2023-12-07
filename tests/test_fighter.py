@@ -31,13 +31,13 @@ def test_load_from_file():
     assert wizard.get_stamina() == 20
     assert wizard.skill_usable("debug fireball") == True
 
-    assert barbarian.use_skill("debug sword", wizard)[0] == True
+    assert barbarian.use_skill("debug sword", wizard) == True
     barbarian.update()
     wizard.update()
     assert barbarian.get_stamina() == 90
     assert wizard.get_hp() == 65
 
-    assert wizard.use_skill("debug fireball", barbarian)[0] == True
+    assert wizard.use_skill("debug fireball", barbarian) == True
     barbarian.update()
     wizard.update()
     assert wizard.get_mp() == 90
@@ -59,7 +59,7 @@ def test_skills():
     fighter1.add_skill(fireball)
 
     assert fighter1.skill_usable("debug fireball") == True
-    assert fighter1.use_skill("debug fireball", fighter2)[0] == True
+    assert fighter1.use_skill("debug fireball", fighter2) == True
     fighter1.update()
     fighter2.update()
     assert fighter1.skill_usable("debug fireball") == False
@@ -250,7 +250,51 @@ def test_apply_effects():
     gm = GameManager.get_instance(teams=teams)
 
     fighter1.apply_effect(burn)
-    assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burn']}
+    assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burning']}
 
     fighter1.apply_effect(burn)
-    assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burn', 'no_name already has effect: burn']}
+    assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burning', 'no_name already has effect: burning']}
+
+def test_get_effects():
+    fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+    burn = EffectFactory.create_effect("burn", {"duration": 3, "damage": 10})
+    freeze = EffectFactory.create_effect("freeze", {"duration": 3})
+
+    fighter.apply_effect(burn)
+    fighter.apply_effect(freeze)
+
+    assert fighter.get_effects() == ["burning", "frozen"]
+
+def test_has_effect():
+    fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+    burn = EffectFactory.create_effect("burn", {"duration": 3, "damage": 10})
+    freeze = EffectFactory.create_effect("freeze", {"duration": 3})
+
+    fighter.apply_effect(burn)
+    fighter.apply_effect(freeze)
+
+    assert fighter.has_effect("frozen") == True
+    assert fighter.has_effect("burning") == True
+    assert fighter.has_effect("donkey doodoo") == False
+
+    assert fighter.has_effects(["frozen", "donkey doodoo"]) == True
+    assert fighter.has_effects(["donkey doodoo"]) == False
+
+def test_can_attack():
+    fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+    fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+
+    skill = Skill(name="stamina_drain", actions={"attack": {"damage": 10, "stamina_cost": 10}})
+    fighter1.add_skill(skill=skill)
+
+    assert fighter1.can_attack() == True
+    fighter1.disallow_attack()
+    assert fighter1.can_attack() == False
+
+    assert fighter1.use_skill("stamina_drain", fighter2) == False
+    assert fighter1.has_attacked() == False
+
+    fighter1.allow_attack()
+    assert fighter1.can_attack() == True
+    assert fighter1.use_skill("stamina_drain", fighter2) == True
+    assert fighter1.has_attacked() == True

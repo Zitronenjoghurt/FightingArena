@@ -43,6 +43,9 @@ class Fighter():
         self.usable_skill_categories = []
         self.usable_category_skills: dict[str, ISkill] = {}
 
+        self.allowed_to_attack = True
+        self.has_attacked_this_round = False
+
         self.behavior: AIBehavior = AIBehaviorFactory.create_behavior(behavior_name=behavior_name, fighter=self)
 
     @staticmethod
@@ -91,6 +94,7 @@ class Fighter():
 
     def update(self) -> None:
         self.execute_effects()
+        self.has_attacked_this_round = False
         self.apply_stat_differences()
 
         self.hp = min(self.hp, self.max_hp)
@@ -115,14 +119,16 @@ class Fighter():
         remove_effects = []
         for effect_item in self.effects.values():
             message = effect_item["effect"].execute(self)
-            gm.log_message(gm.LOG_EFFECT_EXECUTE, message=message)
+            if len(message) > 0:
+                gm.log_message(gm.LOG_EFFECT_EXECUTE, message=message)
             effect_item["duration"] -= 1
 
             if effect_item["duration"] <= 0:
                 remove_effects.append(effect_item["effect"].get_name())
         
         for effect_name in remove_effects:
-            self.effects.pop(effect_name)
+            effect_item = self.effects.pop(effect_name)
+            effect_item["effect"].on_remove(self)
             message = f"{self.get_name()} lost effect: {effect_name}"
             gm.log_message(gm.LOG_EFFECT_REMOVE, message=message)
 
@@ -138,16 +144,28 @@ class Fighter():
 
         effect_item = {"effect": effect, "duration": effect.get_duration()}
         self.effects[effect_name] = effect_item
+        effect.on_apply(self)
 
         message = f"{self.get_name()} received effect: {effect_name}"
         gm.log_message(gm.LOG_EFFECT_APPLY, message=message)
 
+    def has_effect(self, effect_name: str) -> bool:
+        return effect_name in self.get_effects()
+    
+    def has_effects(self, effect_names: list[str]) -> bool:
+        return not all(effect not in self.get_effects() for effect in effect_names)
+
+    def get_effects(self) -> list[str]:
+        return list(self.effects.keys())
+
     def use_skill(self, skill_name: str, target: 'Fighter') -> bool:
         skill = self.get_skill(skill_name)
-        if skill is None:
+        if skill is None or not self.can_attack():
             return False
         
-        return skill.use(target=target)
+        succeeded = skill.use(target=target)[0]
+        self.set_has_attacked(succeeded)
+        return succeeded
 
     def skill_usable(self, skill_name: str) -> bool:
         skill = self.get_skill(skill_name)
@@ -191,6 +209,21 @@ class Fighter():
 
     def has_skill(self, skill_name: str) -> bool:
         return self.get_skill(skill_name) is not None
+    
+    def can_attack(self) -> bool:
+        return self.allowed_to_attack
+    
+    def allow_attack(self) -> None:
+        self.allowed_to_attack = True
+
+    def disallow_attack(self) -> None:
+        self.allowed_to_attack = False
+
+    def has_attacked(self) -> bool:
+        return self.has_attacked_this_round
+
+    def set_has_attacked(self, has_attacked: bool) -> None:
+        self.has_attacked_this_round = has_attacked
     
     def get_name(self) -> str:
         return self.name
