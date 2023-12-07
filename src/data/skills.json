@@ -1,5 +1,5 @@
 {
-    "sword slash": {
+    "debug sword": {
         "actions": {
             "attack": {"damage": 15, "stamina_cost": 10}
         },
@@ -7,7 +7,7 @@
         "message": "{user} uses their sword to slash {opponent}.",
         "themes": ["sword", "knight", "physical", "melee"]
     },
-    "fireball": {
+    "debug fireball": {
         "actions": {
             "attack": {"damage": 10, "mp_cost": 10}
         },

@@ -14,24 +14,24 @@ def test_init():
     assert fighter.get_stamina() == 100
 
 def test_load_from_file():
-    barbarian = Fighter.load_from_file("barbarian")
-    wizard = Fighter.load_from_file("wizard")
+    barbarian = Fighter.load_from_file("debug_barbarian")
+    wizard = Fighter.load_from_file("debug_wizard")
 
     assert barbarian.get_hp() == 100
     assert barbarian.get_mp() == 0
     assert barbarian.get_stamina() == 100
-    assert barbarian.skill_usable("sword slash") == True
+    assert barbarian.skill_usable("debug sword") == True
 
     assert wizard.get_hp() == 80
     assert wizard.get_mp() == 100
     assert wizard.get_stamina() == 20
-    assert wizard.skill_usable("fireball") == True
+    assert wizard.skill_usable("debug fireball") == True
 
-    assert barbarian.use_skill("sword slash", wizard)[0] == True
+    assert barbarian.use_skill("debug sword", wizard)[0] == True
     assert barbarian.get_stamina() == 90
     assert wizard.get_hp() == 65
 
-    assert wizard.use_skill("fireball", barbarian)[0] == True
+    assert wizard.use_skill("debug fireball", barbarian)[0] == True
     assert wizard.get_mp() == 90
     assert barbarian.get_hp() == 90
 
@@ -49,12 +49,12 @@ def test_skills():
     fighter1 = Fighter(max_hp=100, max_mp=10, max_stamina=100)
     fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
 
-    fireball = Skill.create_skill("fireball", fighter1)
+    fireball = Skill.create_skill("debug fireball", fighter1)
     fighter1.add_skill(fireball)
 
-    assert fighter1.skill_usable("fireball") == True
-    assert fighter1.use_skill("fireball", fighter2)[0] == True
-    assert fighter1.skill_usable("fireball") == False
+    assert fighter1.skill_usable("debug fireball") == True
+    assert fighter1.use_skill("debug fireball", fighter2)[0] == True
+    assert fighter1.skill_usable("debug fireball") == False
 
     assert fighter2.get_hp() == 90
     fighter2.update()
