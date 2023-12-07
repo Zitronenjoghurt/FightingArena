@@ -9,10 +9,10 @@ def test_behavior():
     
     assert fireball.is_usable() == True
     assert fireball.use(fighter2)[0] == True
+    fighter1.update()
+    fighter2.update()
     assert fireball.is_usable() == False
 
-    assert fighter2.get_hp() == 90
-    fighter2.update()
     assert fighter2.get_hp() == 85
     fighter2.update()
     assert fighter2.get_hp() == 80
@@ -33,10 +33,10 @@ def test_add_user():
 
     assert fireball.is_usable() == True
     assert fireball.use(fighter2)[0] == True
+    fighter1.update()
+    fighter2.update()
     assert fireball.is_usable() == False
 
-    assert fighter2.get_hp() == 90
-    fighter2.update()
     assert fighter2.get_hp() == 85
     fighter2.update()
     assert fighter2.get_hp() == 80

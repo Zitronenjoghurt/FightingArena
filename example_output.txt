@@ -1,0 +1,73 @@
+==================={FIGHT START}==================
+Team A: Barbarian
+Team B: Wizard
+==================================================
+
+[ROUND 1]
+==================================================
+[Barbarian] 85HP(-15) | 0MP(0) | 90ST(-10)
+[Wizard] 65HP(-15) | 90MP(-10) | 20ST(0)
+==================================================
+Barbarian uses their sword to slash Wizard.
+Wizard throws fireball at Barbarian.
+Barbarian received effect: burn
+Barbarian is burning, -5HP
+==================================================
+
+[ROUND 2]
+==================================================
+[Barbarian] 70HP(-15) | 0MP(0) | 80ST(-10)
+[Wizard] 50HP(-15) | 80MP(-10) | 20ST(0)
+==================================================
+Barbarian uses their sword to slash Wizard.
+Wizard throws fireball at Barbarian.
+Barbarian already has effect: burn
+Barbarian is burning, -5HP
+==================================================
+
+[ROUND 3]
+==================================================
+[Barbarian] 55HP(-15) | 0MP(0) | 70ST(-10)
+[Wizard] 35HP(-15) | 70MP(-10) | 20ST(0)
+==================================================
+Barbarian uses their sword to slash Wizard.
+Wizard throws fireball at Barbarian.
+Barbarian already has effect: burn
+Barbarian is burning, -5HP
+Barbarian lost effect: burn
+==================================================
+
+[ROUND 4]
+==================================================
+[Barbarian] 40HP(-15) | 0MP(0) | 60ST(-10)
+[Wizard] 20HP(-15) | 60MP(-10) | 20ST(0)
+==================================================
+Barbarian uses their sword to slash Wizard.
+Wizard throws fireball at Barbarian.
+Barbarian received effect: burn
+Barbarian is burning, -5HP
+==================================================
+
+[ROUND 5]
+==================================================
+[Barbarian] 25HP(-15) | 0MP(0) | 50ST(-10)
+[Wizard] 5HP(-15) | 50MP(-10) | 20ST(0)
+==================================================
+Barbarian uses their sword to slash Wizard.
+Wizard throws fireball at Barbarian.
+Barbarian already has effect: burn
+Barbarian is burning, -5HP
+==================================================
+
+[ROUND 6]
+==================================================
+[Barbarian] 10HP(-15) | 0MP(0) | 40ST(-10)
+[Wizard] 0HP(-5) | 40MP(-10) | 20ST(0)
+==================================================
+Barbarian uses their sword to slash Wizard.
+Wizard throws fireball at Barbarian.
+Barbarian already has effect: burn
+Barbarian is burning, -5HP
+Barbarian lost effect: burn
+TEAM A WINS!!!
+==================================================

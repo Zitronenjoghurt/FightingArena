@@ -29,6 +29,13 @@ class Fighter():
         self.mp = self.max_mp
         self.max_stamina = max_stamina
         self.stamina = self.max_stamina
+
+        self.hp_difference = 0
+        self.previous_hp_difference = 0
+        self.mp_difference = 0
+        self.previous_mp_difference = 0
+        self.stamina_difference = 0
+        self.previous_stamina_difference = 0
         
         self.effects = {}
         self.skills: dict[str, ISkill] = {}
@@ -83,12 +90,14 @@ class Fighter():
         return True
 
     def update(self) -> None:
-        self.update_usable_skills()
-
         self.execute_effects()
+        self.apply_stat_differences()
+
         self.hp = min(self.hp, self.max_hp)
         self.mp = min(self.mp, self.max_mp)
         self.stamina = min(self.stamina, self.max_stamina)
+
+        self.update_usable_skills()
 
     def get_next_move(self) -> tuple[ISkill, 'Fighter']:
         skill, opponent = self.behavior.select_skill_and_opponent()
@@ -96,7 +105,7 @@ class Fighter():
         return skill, opponent
     
     def get_status(self) -> str:
-        return f"[{self.name}] {self.get_hp()}HP | {self.get_mp()}MP | {self.get_stamina()}ST"
+        return f"[{self.name}] {self.get_hp()}HP({self.previous_hp_difference}) | {self.get_mp()}MP({self.previous_mp_difference}) | {self.get_stamina()}ST({self.previous_stamina_difference})"
 
     def execute_effects(self) -> None:
         if len(self.effects) == 0:
@@ -232,33 +241,48 @@ class Fighter():
         self.stamina = stamina
 
     def add_hp(self, hp: int) -> None:
-        self.hp += hp
-        if self.hp > self.max_hp:
-            self.hp = self.max_hp
+        self.hp_difference += hp
+        if self.hp + self.hp_difference > self.max_hp:
+            self.hp_difference = self.max_hp - self.hp
 
     def add_mp(self, mp: int) -> None:
-        self.mp += mp
-        if self.mp > self.max_mp:
-            self.mp = self.max_mp
+        self.mp_difference += mp
+        if self.mp + self.mp_difference > self.max_mp:
+            self.mp_difference = self.max_mp - self.mp
 
     def add_stamina(self, stamina: int) -> None:
-        self.stamina += stamina
-        if self.stamina > self.max_stamina:
-            self.stamina = self.max_stamina
+        self.stamina_difference += stamina
+        if self.stamina + self.stamina_difference > self.max_stamina:
+            self.stamina_difference = self.max_stamina - self.stamina
 
     def remove_hp(self, hp: int) -> None:
-        self.hp -= hp
-        if self.hp <= 0:
-            self.hp = 0
+        self.hp_difference -= hp
+        if self.hp + self.hp_difference < 0:
+            self.hp_difference = -self.hp
 
     def remove_mp(self, mp: int) -> bool:
         if self.mp < mp:
             return False
-        self.mp -= mp
+        self.mp_difference -= mp
         return True
 
     def remove_stamina(self, stamina: int) -> bool:
         if self.stamina < stamina:
             return False
-        self.stamina -= stamina
+        self.stamina_difference -= stamina
         return True
+    
+    def apply_stat_differences(self) -> None:
+        self.hp += self.hp_difference
+        self.mp += self.mp_difference
+        self.stamina += self.stamina_difference
+
+        if self.hp < 0:
+            self.set_hp(0)
+        
+        self.previous_hp_difference = self.hp_difference
+        self.hp_difference = 0
+        self.previous_mp_difference = self.mp_difference
+        self.mp_difference = 0
+        self.previous_stamina_difference = self.stamina_difference
+        self.stamina_difference = 0

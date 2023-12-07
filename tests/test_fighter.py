@@ -32,16 +32,18 @@ def test_load_from_file():
     assert wizard.skill_usable("debug fireball") == True
 
     assert barbarian.use_skill("debug sword", wizard)[0] == True
+    barbarian.update()
+    wizard.update()
     assert barbarian.get_stamina() == 90
     assert wizard.get_hp() == 65
 
     assert wizard.use_skill("debug fireball", barbarian)[0] == True
+    barbarian.update()
+    wizard.update()
     assert wizard.get_mp() == 90
-    assert barbarian.get_hp() == 90
+    assert barbarian.get_hp() == 85
 
     # fireball burn damage
-    barbarian.update()
-    assert barbarian.get_hp() == 85
     barbarian.update()
     assert barbarian.get_hp() == 80
     barbarian.update()
@@ -58,10 +60,10 @@ def test_skills():
 
     assert fighter1.skill_usable("debug fireball") == True
     assert fighter1.use_skill("debug fireball", fighter2)[0] == True
+    fighter1.update()
+    fighter2.update()
     assert fighter1.skill_usable("debug fireball") == False
 
-    assert fighter2.get_hp() == 90
-    fighter2.update()
     assert fighter2.get_hp() == 85
     fighter2.update()
     assert fighter2.get_hp() == 80
@@ -102,17 +104,40 @@ def test_remove():
     assert fighter.remove_mp(50) == True
     assert fighter.remove_stamina(50) == True
 
+    assert fighter.hp_difference == -50
+    assert fighter.mp_difference == -50
+    assert fighter.stamina_difference == -50
+
+    fighter.update()
+
     assert fighter.get_hp() == 50
     assert fighter.get_mp() == 50
     assert fighter.get_stamina() == 50
+    assert fighter.hp_difference == 0
+    assert fighter.mp_difference == 0
+    assert fighter.stamina_difference == 0
+    assert fighter.previous_hp_difference == -50
+    assert fighter.previous_mp_difference == -50
+    assert fighter.previous_stamina_difference == -50
 
     fighter.remove_hp(100)
     assert fighter.remove_mp(100) == False
     assert fighter.remove_stamina(100) == False
+    assert fighter.hp_difference == -50
+    assert fighter.mp_difference == 0
+    assert fighter.stamina_difference == 0
+
+    fighter.update()
 
     assert fighter.get_hp() == 0
     assert fighter.get_mp() == 50
     assert fighter.get_stamina() == 50
+    assert fighter.hp_difference == 0
+    assert fighter.mp_difference == 0
+    assert fighter.stamina_difference == 0
+    assert fighter.previous_hp_difference == -50
+    assert fighter.previous_mp_difference == 0
+    assert fighter.previous_stamina_difference == 0
 
 def test_add():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
@@ -125,17 +150,43 @@ def test_add():
     fighter.add_mp(50)
     fighter.add_stamina(50)
 
+    assert fighter.hp_difference == 50
+    assert fighter.mp_difference == 50
+    assert fighter.stamina_difference == 50
+
+    fighter.update()
+
     assert fighter.get_hp() == 100
     assert fighter.get_mp() == 100
     assert fighter.get_stamina() == 100
+    assert fighter.hp_difference == 0
+    assert fighter.mp_difference == 0
+    assert fighter.stamina_difference == 0
+    assert fighter.previous_hp_difference == 50
+    assert fighter.previous_mp_difference == 50
+    assert fighter.previous_stamina_difference == 50
+
+    fighter.set_hp(80)
 
     fighter.add_hp(100)
     fighter.add_mp(100)
     fighter.add_stamina(100)
 
+    assert fighter.hp_difference == 20
+    assert fighter.mp_difference == 0
+    assert fighter.stamina_difference == 0
+
+    fighter.update()
+
     assert fighter.get_hp() == 100
     assert fighter.get_mp() == 100
     assert fighter.get_stamina() == 100
+    assert fighter.hp_difference == 0
+    assert fighter.mp_difference == 0
+    assert fighter.stamina_difference == 0
+    assert fighter.previous_hp_difference == 20
+    assert fighter.previous_mp_difference == 0
+    assert fighter.previous_stamina_difference == 0
 
 def test_update():
     fighter = Fighter(max_hp=100, max_mp=100, max_stamina=100)
@@ -143,6 +194,8 @@ def test_update():
     fighter.remove_hp(50)
     assert fighter.remove_mp(50) == True
     assert fighter.remove_stamina(50) == True
+
+    fighter.update()
 
     assert fighter.get_hp() == 50
     assert fighter.get_mp() == 50

@@ -10,10 +10,12 @@ def test_attack():
 
     assert attack1.is_executable() == True
     assert attack1.execute(fighter2) == True
+    fighter2.update()
     assert fighter2.get_hp() == 90
 
     assert attack2.is_executable() == True
     assert attack2.execute(fighter1) == True
+    fighter1.update()
     assert fighter1.get_hp() == 75
     
 
@@ -30,6 +32,8 @@ def test_heal():
     # heal 1
     assert heal1.is_executable() == True
     assert heal1.execute(fighter1) == True
+    fighter1.update()
+    fighter2.update()
     assert fighter1.get_hp() == 100
     assert fighter1.get_mp() == 10
     assert heal1.is_executable() == False
@@ -37,6 +41,8 @@ def test_heal():
     # heal 2
     assert heal2.is_executable() == True
     assert heal2.execute(fighter2) == True
+    fighter1.update()
+    fighter2.update()
     assert fighter2.get_hp() == 100
     assert fighter2.get_mp() == 20
     assert heal2.is_executable() == False
@@ -54,6 +60,8 @@ def test_lifesteal():
     # lifesteal 1
     assert lifesteal1.is_executable() == True
     assert lifesteal1.execute(fighter2) == True
+    fighter1.update()
+    fighter2.update()
     assert fighter1.get_hp() == 70
     assert fighter1.get_mp() == 40
     assert fighter2.get_hp() == 40
@@ -62,6 +70,8 @@ def test_lifesteal():
     # lifesteal 2
     assert lifesteal2.is_executable() == True
     assert lifesteal2.execute(fighter1) == True
+    fighter1.update()
+    fighter2.update()
     assert fighter1.get_hp() == 60
     assert fighter2.get_hp() == 60
     assert fighter2.get_mp() == 40

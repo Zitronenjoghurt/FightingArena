@@ -15,14 +15,6 @@ def test_init():
     assert gm2.get_team_names() == ["A", "B"]
 
 def test_example_game():
-    ROUND0 = {'game_status_top': ['====={FIGHT START}=====', 'Team A: Barbarian', 'Team B: Wizard', '====={FIGHT START}=====']}
-    ROUND1 = {'game_status_top': ['ROUND: 1'], 'skill_use': ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.'], 'effect_apply': ['Barbarian received effect: burn'], 'effect_execute': ['Barbarian is burning, -5HP'], 'fighter_status': ['[Barbarian] 85HP | 0MP | 90ST', '[Wizard] 65HP | 90MP | 20ST']}
-    ROUND2 = {'game_status_top': ['ROUND: 2'], 'skill_use': ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.'], 'effect_apply': ['Barbarian already has effect: burn'], 'effect_execute': ['Barbarian is burning, -5HP'], 'fighter_status': ['[Barbarian] 70HP | 0MP | 80ST', '[Wizard] 50HP | 80MP | 20ST']}
-    ROUND3 = {'game_status_top': ['ROUND: 3'], 'skill_use': ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.'], 'effect_apply': ['Barbarian already has effect: burn'], 'effect_execute': ['Barbarian is burning, -5HP'], 'effect_remove': ['Barbarian lost effect: burn'], 'fighter_status': ['[Barbarian] 55HP | 0MP | 70ST', '[Wizard] 35HP | 70MP | 20ST']}
-    ROUND4 = {'game_status_top': ['ROUND: 4'], 'skill_use': ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.'], 'effect_apply': ['Barbarian received effect: burn'], 'effect_execute': ['Barbarian is burning, -5HP'], 'fighter_status': ['[Barbarian] 40HP | 0MP | 60ST', '[Wizard] 20HP | 60MP | 20ST']}
-    ROUND5 = {'game_status_top': ['ROUND: 5'], 'skill_use': ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.'], 'effect_apply': ['Barbarian already has effect: burn'], 'effect_execute': ['Barbarian is burning, -5HP'], 'fighter_status': ['[Barbarian] 25HP | 0MP | 50ST', '[Wizard] 5HP | 50MP | 20ST']}
-    ROUND6 = {'game_status_top': ['ROUND: 6'], 'skill_use': ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.'], 'effect_apply': ['Barbarian already has effect: burn'], 'effect_execute': ['Barbarian is burning, -5HP'], 'effect_remove': ['Barbarian lost effect: burn'], 'fighter_status': ['[Barbarian] 10HP | 0MP | 40ST', '[Wizard] 0HP | 40MP | 20ST'], 'game_finish': ['\nTEAM A WINS!!!']}
-
     GameManager.reset_instance()
 
     barbarian = Fighter.load_from_file("debug_barbarian", "Barbarian")
@@ -33,13 +25,53 @@ def test_example_game():
     gm = GameManager.get_instance(teams=teams, round_time=0)
     gm.start_game()
 
-    assert gm.log.get_round_log(0) == ROUND0
-    assert gm.log.get_round_log(1) == ROUND1
-    assert gm.log.get_round_log(2) == ROUND2
-    assert gm.log.get_round_log(3) == ROUND3
-    assert gm.log.get_round_log(4) == ROUND4
-    assert gm.log.get_round_log(5) == ROUND5
-    assert gm.log.get_round_log(6) == ROUND6
+    # ROUND 0
+    assert gm.log.get_round_log(0)[gm.LOG_GAME_STATUS_TOP] == ['==================={FIGHT START}==================', 'Team A: Barbarian', 'Team B: Wizard', '==================================================']
+
+    # ROUND 1
+    assert gm.log.get_round_log(1)[gm.LOG_GAME_STATUS_TOP] == ['[ROUND 1]']
+    assert gm.log.get_round_log(1)[gm.LOG_SKILL_USE]       == ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.']
+    assert gm.log.get_round_log(1)[gm.LOG_EFFECT_APPLY]    == ['Barbarian received effect: burn']
+    assert gm.log.get_round_log(1)[gm.LOG_EFFECT_EXECUTE]  == ['Barbarian is burning, -5HP']
+    assert gm.log.get_round_log(1)[gm.LOG_FIGHTER_STATUS]  == ['[Barbarian] 85HP(-15) | 0MP(0) | 90ST(-10)', '[Wizard] 65HP(-15) | 90MP(-10) | 20ST(0)']
+
+    # ROUND 2
+    assert gm.log.get_round_log(2)[gm.LOG_GAME_STATUS_TOP] == ['[ROUND 2]']
+    assert gm.log.get_round_log(2)[gm.LOG_SKILL_USE]       == ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.']
+    assert gm.log.get_round_log(2)[gm.LOG_EFFECT_APPLY]    == ['Barbarian already has effect: burn']
+    assert gm.log.get_round_log(2)[gm.LOG_EFFECT_EXECUTE]  == ['Barbarian is burning, -5HP']
+    assert gm.log.get_round_log(2)[gm.LOG_FIGHTER_STATUS]  == ['[Barbarian] 70HP(-15) | 0MP(0) | 80ST(-10)', '[Wizard] 50HP(-15) | 80MP(-10) | 20ST(0)']
+
+    # ROUND 3
+    assert gm.log.get_round_log(3)[gm.LOG_GAME_STATUS_TOP] == ['[ROUND 3]']
+    assert gm.log.get_round_log(3)[gm.LOG_SKILL_USE]       == ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.']
+    assert gm.log.get_round_log(3)[gm.LOG_EFFECT_APPLY]    == ['Barbarian already has effect: burn']
+    assert gm.log.get_round_log(3)[gm.LOG_EFFECT_EXECUTE]  == ['Barbarian is burning, -5HP']
+    assert gm.log.get_round_log(3)[gm.LOG_EFFECT_REMOVE]   == ['Barbarian lost effect: burn']
+    assert gm.log.get_round_log(3)[gm.LOG_FIGHTER_STATUS]  == ['[Barbarian] 55HP(-15) | 0MP(0) | 70ST(-10)', '[Wizard] 35HP(-15) | 70MP(-10) | 20ST(0)']
+
+    # ROUND 4
+    assert gm.log.get_round_log(4)[gm.LOG_GAME_STATUS_TOP] == ['[ROUND 4]']
+    assert gm.log.get_round_log(4)[gm.LOG_SKILL_USE]       == ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.']
+    assert gm.log.get_round_log(4)[gm.LOG_EFFECT_APPLY]    == ['Barbarian received effect: burn']
+    assert gm.log.get_round_log(4)[gm.LOG_EFFECT_EXECUTE]  == ['Barbarian is burning, -5HP']
+    assert gm.log.get_round_log(4)[gm.LOG_FIGHTER_STATUS]  == ['[Barbarian] 40HP(-15) | 0MP(0) | 60ST(-10)', '[Wizard] 20HP(-15) | 60MP(-10) | 20ST(0)']
+
+    # ROUND 5
+    assert gm.log.get_round_log(5)[gm.LOG_GAME_STATUS_TOP] == ['[ROUND 5]']
+    assert gm.log.get_round_log(5)[gm.LOG_SKILL_USE]       == ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.']
+    assert gm.log.get_round_log(5)[gm.LOG_EFFECT_APPLY]    == ['Barbarian already has effect: burn']
+    assert gm.log.get_round_log(5)[gm.LOG_EFFECT_EXECUTE]  == ['Barbarian is burning, -5HP']
+    assert gm.log.get_round_log(5)[gm.LOG_FIGHTER_STATUS]  == ['[Barbarian] 25HP(-15) | 0MP(0) | 50ST(-10)', '[Wizard] 5HP(-15) | 50MP(-10) | 20ST(0)']
+
+    # ROUND 6
+    assert gm.log.get_round_log(6)[gm.LOG_GAME_STATUS_TOP] == ['[ROUND 6]']
+    assert gm.log.get_round_log(6)[gm.LOG_SKILL_USE]       == ['Barbarian uses their sword to slash Wizard.', 'Wizard throws fireball at Barbarian.']
+    assert gm.log.get_round_log(6)[gm.LOG_EFFECT_APPLY]    == ['Barbarian already has effect: burn']
+    assert gm.log.get_round_log(6)[gm.LOG_EFFECT_EXECUTE]  == ['Barbarian is burning, -5HP']
+    assert gm.log.get_round_log(6)[gm.LOG_EFFECT_REMOVE]   == ['Barbarian lost effect: burn']
+    assert gm.log.get_round_log(6)[gm.LOG_FIGHTER_STATUS]  == ['[Barbarian] 10HP(-15) | 0MP(0) | 40ST(-10)', '[Wizard] 0HP(-5) | 40MP(-10) | 20ST(0)']
+    assert gm.log.get_round_log(6)[gm.LOG_GAME_FINISH]     == ['TEAM A WINS!!!']
 
 def test_add_teams():
     GameManager.reset_instance()

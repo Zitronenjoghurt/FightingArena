@@ -42,11 +42,11 @@ class GameManager():
         GameManager._instance = None
 
     def start_game(self) -> None:
-        self.log_message(self.LOG_GAME_STATUS_TOP, "====={FIGHT START}=====")
+        self.log_message(self.LOG_GAME_STATUS_TOP, "==================={FIGHT START}==================")
         for team_name, fighters in self.teams.items():
             team_info = f"Team {team_name}: " + ",".join([fighter.get_name() for fighter in fighters])
             self.log_message(self.LOG_GAME_STATUS_TOP, team_info)
-        self.log_message(self.LOG_GAME_STATUS_TOP, "====={FIGHT START}=====")
+        self.log_message(self.LOG_GAME_STATUS_TOP, "==================================================")
         
         if self.print_log:
             print(self.get_start_message())
@@ -58,7 +58,7 @@ class GameManager():
             time.sleep(self.round_time)
 
     def run(self) -> None:
-        self.log_message(self.LOG_GAME_STATUS_TOP, f"ROUND: {self.round}")
+        self.log_message(self.LOG_GAME_STATUS_TOP, f"[ROUND {self.round}]")
         fighters = self.get_fighters()
 
         for fighter in fighters:
@@ -103,7 +103,7 @@ class GameManager():
 
     def finish_game(self, team_names: set[str]) -> None:
         for team_name in team_names:
-            message = f"\nTEAM {team_name} WINS!!!"
+            message = f"TEAM {team_name} WINS!!!"
             self.log_message(self.LOG_GAME_FINISH, message=message)
         self.stop_game()
 
@@ -118,11 +118,12 @@ class GameManager():
 
     def get_round_message(self, round: int) -> None:
         round_message = [
-            self.log.get_logs_string(round, [self.LOG_GAME_STATUS_TOP, self.LOG_SKILL_USE, self.LOG_EFFECT_APPLY, self.LOG_EFFECT_EXECUTE, self.LOG_EFFECT_REMOVE]),
-            "==========",
+            self.log.get_logs_string(round, [self.LOG_GAME_STATUS_TOP]),
+            "==================================================",
             self.log.get_logs_string(round, [self.LOG_FIGHTER_STATUS]),
-            "==========",
-            self.log.get_logs_string(round, [self.LOG_GAME_FINISH])
+            "==================================================",
+            self.log.get_logs_string(round, [self.LOG_SKILL_USE, self.LOG_EFFECT_APPLY, self.LOG_EFFECT_EXECUTE, self.LOG_EFFECT_REMOVE, self.LOG_GAME_FINISH]),
+            "==================================================\n",
         ]
         return '\n'.join(round_message)
     

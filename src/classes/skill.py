@@ -80,7 +80,9 @@ class Skill():
             succeeded = False
         else:
             for action in self.actions:
-                status = action.execute(target)
+                status = True
+                if action.is_executable():
+                    status = action.execute(target)
                 if status == False:
                     succeeded = False
             
