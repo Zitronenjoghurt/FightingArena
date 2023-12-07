@@ -8,6 +8,7 @@ class GameManager():
     LOG_EFFECT_APPLY = "effect_apply"
     LOG_EFFECT_EXECUTE = "effect_execute"
     LOG_EFFECT_REMOVE = "effect_remove"
+    LOG_GAME_FINISH = "game_finish"
     LOG_FIGHTER_STATUS = "fighter_status"
     LOG_SKILL_USE = "skill_use"
     
@@ -58,8 +59,11 @@ class GameManager():
         for fighter in fighters:
             self.log_message(self.LOG_FIGHTER_STATUS, fighter.get_status())
 
+        winning_teams = self.check_win_condition()
+        if len(winning_teams) > 0:
+            self.finish_game(winning_teams)
+
         self.print_round(self.round)
-        self.check_win_condition()
 
     def run_fighter_turn(self, fighter: IFighter) -> None:
         skill, opponent = fighter.get_next_move()
@@ -77,14 +81,18 @@ class GameManager():
         success, message = skill.use(target=opponent)
         self.log_message(self.LOG_SKILL_USE, message=message)
 
-    def check_win_condition(self) -> None:
+    def check_win_condition(self) -> set[str]:
+        winning_teams = set()
         for fighter in self.get_fighters():
             opponents = self.get_opponents(fighter)
             if len(opponents) == 0:
-                self.finish_game(self.get_fighter_team(fighter))
+                winning_teams.add(fighter.get_team())
+        return winning_teams
 
-    def finish_game(self, team_name: str) -> None:
-        print(f"\nTEAM {team_name} WINS!!!")
+    def finish_game(self, team_names: set[str]) -> None:
+        for team_name in team_names:
+            message = f"\nTEAM {team_name} WINS!!!"
+            self.log_message(self.LOG_GAME_FINISH, message=message)
         self.stop_game()
 
     def stop_game(self) -> None:
@@ -96,16 +104,19 @@ class GameManager():
         print("==========")
         self.log.print_logs(round, [self.LOG_FIGHTER_STATUS])
         print("==========")
+        self.log.print_logs(round, [self.LOG_GAME_FINISH])
 
     def log_message(self, log_type: str, message: str) -> None:
         self.log.log_message(round=self.round, log_type=log_type, message=message)
 
     def add_teams(self, teams: dict[str, list[IFighter]]) -> None:
-        for team, fighters in teams.items():
-            if self.teams.get(team, None) is None:
-                self.teams[team] = fighters
+        for team_name, fighters in teams.items():
+            if self.teams.get(team_name, None) is None:
+                self.teams[team_name] = fighters
             else:
-                self.teams[team].extend(fighters)
+                self.teams[team_name].extend(fighters)
+            for fighter in fighters:
+                fighter.set_team(team_name=team_name)
 
     def get_team_name(self, fighter: IFighter) -> Optional[str]:
         for team_name, fighters in self.teams.items():
@@ -119,12 +130,6 @@ class GameManager():
     def get_team_fighters(self, team_name: str) -> list[IFighter]:
         return self.teams.get(team_name, [])
 
-    def get_fighter_team(self, fighter: IFighter) -> Optional[str]:
-        for team_name, fighters in self.teams.items():
-            if fighter in fighters:
-                return team_name
-        return None
-
     def get_fighters(self) -> list[IFighter]:
         fighters = []
         for fighter_list in self.teams.values():
@@ -132,7 +137,7 @@ class GameManager():
         return fighters
     
     def get_opponents(self, fighter: IFighter) -> list[IFighter]:
-        fighter_team = self.get_fighter_team(fighter)
+        fighter_team = fighter.get_team()
         opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters if fighter.get_hp() > 0]
         return opponents
     

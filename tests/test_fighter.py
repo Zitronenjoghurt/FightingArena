@@ -1,4 +1,6 @@
+from src.classes.effect import EffectFactory
 from src.classes.fighter import Fighter
+from src.classes.game_manager import GameManager
 from src.classes.skill import Skill
 
 def test_init():
@@ -14,14 +16,16 @@ def test_init():
     assert fighter.get_stamina() == 100
 
 def test_load_from_file():
-    barbarian = Fighter.load_from_file("debug_barbarian")
-    wizard = Fighter.load_from_file("debug_wizard")
+    barbarian = Fighter.load_from_file("debug_barbarian", "George")
+    wizard = Fighter.load_from_file("debug_wizard", "Gandalf")
 
+    assert barbarian.get_name() == "George"
     assert barbarian.get_hp() == 100
     assert barbarian.get_mp() == 0
     assert barbarian.get_stamina() == 100
     assert barbarian.skill_usable("debug sword") == True
 
+    assert wizard.get_name() == "Gandalf"
     assert wizard.get_hp() == 80
     assert wizard.get_mp() == 100
     assert wizard.get_stamina() == 20
@@ -73,14 +77,20 @@ def test_setters():
     fighter.set_max_mp(200)
     fighter.set_max_stamina(200)
 
+    assert fighter.get_name() == "no_name"
+    assert fighter.get_team() == ""
     assert fighter.get_max_hp() == 200
     assert fighter.get_max_mp() == 200
     assert fighter.get_max_stamina() == 200
 
+    fighter.set_name("George")
+    fighter.set_team("A")
     fighter.set_hp(150)
     fighter.set_mp(150)
     fighter.set_stamina(150)
 
+    assert fighter.get_name() == "George"
+    assert fighter.get_team() == "A"
     assert fighter.get_hp() == 150
     assert fighter.get_mp() == 150
     assert fighter.get_stamina() == 150
@@ -177,3 +187,17 @@ def test_get_usable_skills():
     assert fighter1.get_usable_skills() == []
     assert fighter1.get_usable_skill_categories() == []
     assert fighter1.get_usable_category_skills() == {}
+
+def test_apply_effects():
+    GameManager.reset_instance()
+    fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
+    burn = EffectFactory.create_effect("burn", {"duration": 3, "damage": 10})
+    teams = {"A": [fighter1]}
+
+    gm = GameManager.get_instance(teams=teams)
+
+    fighter1.apply_effect(burn)
+    assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burn']}
+
+    fighter1.apply_effect(burn)
+    assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burn', 'no_name already has effect: burn']}

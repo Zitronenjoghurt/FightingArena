@@ -22,6 +22,7 @@ class Fighter():
             raise ValueError(f"Invalid init parameters for fighter class.")
         
         self.name = name
+        self.team = ""
         self.max_hp = max_hp
         self.hp = self.max_hp
         self.max_mp = max_mp
@@ -184,6 +185,9 @@ class Fighter():
     
     def get_name(self) -> str:
         return self.name
+    
+    def get_team(self) -> str:
+        return self.team
 
     def get_max_hp(self) -> int:
         return self.max_hp
@@ -203,6 +207,12 @@ class Fighter():
     def get_stamina(self) -> int:
         return self.stamina
     
+    def set_name(self, name: str) -> None:
+        self.name = name
+    
+    def set_team(self, team_name: str) -> None:
+        self.team = team_name
+
     def set_max_hp(self, max_hp: int) -> None:
         self.max_hp = max_hp
     

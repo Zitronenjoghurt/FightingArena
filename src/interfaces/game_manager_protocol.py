@@ -19,7 +19,7 @@ class IGameManager(Protocol):
     def run_fighter_turn(self, fighter: IFighter) -> None:
         ...
 
-    def check_win_condition(self) -> None:
+    def check_win_condition(self) -> set[str]:
         ...
 
     def finish_game(self, team_name: str) -> None:
