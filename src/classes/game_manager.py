@@ -4,6 +4,12 @@ from ..interfaces.fighter_protocol import IFighter
 
 class GameManager():
     _instance = None
+
+    LOG_EFFECT_APPLY = "effect_apply"
+    LOG_EFFECT_EXECUTE = "effect_execute"
+    LOG_EFFECT_REMOVE = "effect_remove"
+    LOG_FIGHTER_STATUS = "fighter_status"
+    LOG_SKILL_USE = "skill_use"
     
     def __init__(self, teams: dict[str, list[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000) -> None:
         if GameManager._instance is not None:
@@ -14,13 +20,14 @@ class GameManager():
         self.round = 0
         self.max_rounds = max_rounds
         self.round_time = round_time
+        self.log = GameLog()
 
         self.add_teams(teams=teams)
 
     @staticmethod
-    def get_instance(teams: dict[str, list[IFighter]] = {}) -> 'GameManager':
+    def get_instance(teams: dict[str, list[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000) -> 'GameManager':
         if not GameManager._instance:
-            GameManager._instance = GameManager(teams=teams)
+            GameManager._instance = GameManager(teams=teams, round_time=round_time, max_rounds=max_rounds)
         return GameManager._instance
     
     @staticmethod
@@ -40,41 +47,35 @@ class GameManager():
             time.sleep(self.round_time)
 
     def run(self) -> None:
-        print(f"\nROUND {self.round}:")
         fighters = self.get_fighters()
 
         for fighter in fighters:
             self.run_fighter_turn(fighter)
         
         for fighter in fighters:
-            effect_messages = fighter.update()
-            for message in effect_messages:
-                print(message)
-
-        print("==========")
+            fighter.update()
 
         for fighter in fighters:
-            print(fighter.get_status())
-        
-        print("==========")
+            self.log_message(self.LOG_FIGHTER_STATUS, fighter.get_status())
 
+        self.print_round(self.round)
         self.check_win_condition()
-
-        time.sleep(self.round_time)
 
     def run_fighter_turn(self, fighter: IFighter) -> None:
         skill, opponent = fighter.get_next_move()
 
         if not skill:
-            print(f"{fighter.get_name()} has no usable skill.")
+            message = f"{fighter.get_name()} has no usable skill."
+            self.log_message(self.LOG_SKILL_USE, message)
             return
         
         if not opponent:
-            print(f"{fighter.get_name()} has no opponent.")
+            message = f"{fighter.get_name()} has no opponent."
+            self.log_message(self.LOG_SKILL_USE, message)
             return
         
         success, message = skill.use(target=opponent)
-        print(message)
+        self.log_message(self.LOG_SKILL_USE, message=message)
 
     def check_win_condition(self) -> None:
         for fighter in self.get_fighters():
@@ -88,6 +89,16 @@ class GameManager():
 
     def stop_game(self) -> None:
         self.running = False
+
+    def print_round(self, round: int) -> None:
+        print(f"\nROUND {round}:")
+        self.log.print_logs(round, [self.LOG_SKILL_USE, self.LOG_EFFECT_APPLY, self.LOG_EFFECT_EXECUTE, self.LOG_EFFECT_REMOVE])
+        print("==========")
+        self.log.print_logs(round, [self.LOG_FIGHTER_STATUS])
+        print("==========")
+
+    def log_message(self, log_type: str, message: str) -> None:
+        self.log.log_message(round=self.round, log_type=log_type, message=message)
 
     def add_teams(self, teams: dict[str, list[IFighter]]) -> None:
         for team, fighters in teams.items():
@@ -124,3 +135,33 @@ class GameManager():
         fighter_team = self.get_fighter_team(fighter)
         opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters if fighter.get_hp() > 0]
         return opponents
+    
+class GameLog():
+    def __init__(self) -> None:
+        self.round_logs: dict[int, dict[str, list[str]]] = {}
+    
+    def log_message(self, round: int, log_type: str, message: str) -> None:
+        if round not in self.round_logs:
+            self.round_logs[round] = {}
+
+        if log_type not in self.round_logs[round]:
+            self.round_logs[round][log_type] = []
+
+        self.round_logs[round][log_type].append(message)
+
+    def print_logs(self, round: int, log_types: list[str]) -> None:
+        if round not in self.round_logs:
+            return
+        
+        round_log = self.get_round_log(round=round)
+        for log_type in log_types:
+            if log_type not in round_log:
+                continue
+            self.print_strings(round_log.get(log_type, []))
+        
+    def get_round_log(self, round: int) -> dict[str, list[str]]:
+        return self.round_logs.get(round, {})
+    
+    def print_strings(self, strings: list[str]) -> None:
+        for string in strings:
+            print(string)

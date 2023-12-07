@@ -8,7 +8,7 @@ def test_behavior():
     fireball = Skill.create_skill(skill_name="fireball", fighter=fighter1)
     
     assert fireball.is_usable() == True
-    assert fireball.use(fighter2) == True
+    assert fireball.use(fighter2)[0] == True
     assert fireball.is_usable() == False
 
     assert fighter2.get_hp() == 90
@@ -32,7 +32,7 @@ def test_add_user():
     fighter2.add_skill(sword_slash)
 
     assert fireball.is_usable() == True
-    assert fireball.use(fighter2) == True
+    assert fireball.use(fighter2)[0] == True
     assert fireball.is_usable() == False
 
     assert fighter2.get_hp() == 90

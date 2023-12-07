@@ -75,7 +75,6 @@ class Skill():
 
     def use(self, target: IFighter) -> tuple[bool, str]:
         succeeded = True
-        effect_messages = []
 
         if not self.is_usable():
             succeeded = False
@@ -86,11 +85,10 @@ class Skill():
                     succeeded = False
             
             for effect in self.effects:
-                message = "\n" + target.apply_effect(effect)
-                effect_messages.append(message)
+                target.apply_effect(effect)
 
         if succeeded:
-            return True, self.message.format(user=self.user.get_name(), opponent=target.get_name()) + "".join(effect_messages)
+            return True, self.message.format(user=self.user.get_name(), opponent=target.get_name())
         else:
             return False, f"{self.user.get_name()} tried to use {self.get_name()} against {target.get_name()}, but it failed."
 

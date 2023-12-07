@@ -2,6 +2,8 @@ from src.classes.fighter import Fighter
 from src.classes.game_manager import GameManager
 
 def test_init():
+    GameManager.reset_instance()
+
     barbarian = Fighter.load_from_file("barbarian")
     wizard = Fighter.load_from_file("wizard")
 
@@ -12,9 +14,9 @@ def test_init():
 
     assert gm2.get_team_names() == ["A", "B"]
 
-    gm1.reset_instance()
-
 def test_add_teams():
+    GameManager.reset_instance()
+
     barbarian1 = Fighter.load_from_file("barbarian")
     barbarian2 = Fighter.load_from_file("barbarian")
     wizard1 = Fighter.load_from_file("wizard")
@@ -33,6 +35,8 @@ def test_add_teams():
     gm.reset_instance()
 
 def test_get_team_name():
+    GameManager.reset_instance()
+
     barbarian1 = Fighter.load_from_file("barbarian")
     barbarian2 = Fighter.load_from_file("barbarian")
     wizard1 = Fighter.load_from_file("wizard")
@@ -50,6 +54,8 @@ def test_get_team_name():
     gm.reset_instance()
 
 def test_get_fighter_team():
+    GameManager.reset_instance()
+
     barbarian1 = Fighter.load_from_file("barbarian")
     barbarian2 = Fighter.load_from_file("barbarian")
     wizard1 = Fighter.load_from_file("wizard")
@@ -66,6 +72,8 @@ def test_get_fighter_team():
     gm.reset_instance()
 
 def test_get_opponents():
+    GameManager.reset_instance()
+    
     barbarian1 = Fighter.load_from_file("barbarian")
     barbarian2 = Fighter.load_from_file("barbarian")
     wizard1 = Fighter.load_from_file("wizard")

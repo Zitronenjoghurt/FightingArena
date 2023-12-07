@@ -1,5 +1,6 @@
 import json
 import os
+from .game_manager import GameManager
 from typing import Optional
 from .ai_behavior import AIBehavior, AIBehaviorFactory
 from .skill import Skill
@@ -80,15 +81,13 @@ class Fighter():
         
         return True
 
-    def update(self) -> list[str]:
+    def update(self) -> None:
         self.update_usable_skills()
 
-        effect_messages = self.execute_effects()
+        self.execute_effects()
         self.hp = min(self.hp, self.max_hp)
         self.mp = min(self.mp, self.max_mp)
         self.stamina = min(self.stamina, self.max_stamina)
-
-        return effect_messages
 
     def get_next_move(self) -> tuple[ISkill, 'Fighter']:
         skill, opponent = self.behavior.select_skill_and_opponent()
@@ -98,32 +97,40 @@ class Fighter():
     def get_status(self) -> str:
         return f"[{self.name}] {self.get_hp()}HP | {self.get_mp()}MP | {self.get_stamina()}ST"
 
-    def execute_effects(self) -> list[str]:
-        messages = []
+    def execute_effects(self) -> None:
+        if len(self.effects) == 0:
+            return
+        gm = GameManager.get_instance()
+
         remove_effects = []
         for effect_item in self.effects.values():
             message = effect_item["effect"].execute(self)
+            gm.log_message(gm.LOG_EFFECT_EXECUTE, message=message)
             effect_item["duration"] -= 1
-            messages.append(message)
 
             if effect_item["duration"] <= 0:
                 remove_effects.append(effect_item["effect"].get_name())
         
         for effect_name in remove_effects:
             self.effects.pop(effect_name)
-            messages.append(f"{self.get_name()} lost effect: {effect_name}")
-            
-        return messages
+            message = f"{self.get_name()} lost effect: {effect_name}"
+            gm.log_message(gm.LOG_EFFECT_REMOVE, message=message)
 
-    def apply_effect(self, effect: IEffect) -> str:
+    def apply_effect(self, effect: IEffect) -> None:
+        gm = GameManager.get_instance()
+
         effect_name = effect.get_name()
 
         if effect_name in self.effects:
-            return f"{self.get_name()} already has effect: {effect_name}"
+            message = f"{self.get_name()} already has effect: {effect_name}"
+            gm.log_message(gm.LOG_EFFECT_APPLY, message=message)
+            return
 
         effect_item = {"effect": effect, "duration": effect.get_duration()}
         self.effects[effect_name] = effect_item
-        return f"{self.get_name()} received effect: {effect_name}"
+
+        message = f"{self.get_name()} received effect: {effect_name}"
+        gm.log_message(gm.LOG_EFFECT_APPLY, message=message)
 
     def use_skill(self, skill_name: str, target: 'Fighter') -> bool:
         skill = self.get_skill(skill_name)
