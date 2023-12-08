@@ -44,7 +44,7 @@ Example of the contents in `barbarian.json`:
 
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
-|`name`|`no`|str|The name of the fighter class.|`no_name`|`barbarian`|
+|`name`|`no`|str|The name fighters of this class will get by default (if not specified otherwise).|`no_name`|`barbarian`|
 |`max_hp`|`no`|int|The maximum HP fighters of this class have.|`0`|`1000`|
 |`max_mp`|`no`|int|The maximum MP fighters of this class have.|`0`|`200`|
 |`max_stamina`|`no`|int|The maximum amount of Stamina fighters of this class have.|`0`|`200`|
