@@ -32,7 +32,7 @@ class SkillLibrary():
         return self.library.get(skill_name, None)
 
 class Skill():
-    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[str, dict]] = None, effects: Optional[dict[str, dict]] = None, message: str = "", cooldown: int = 0) -> None:
+    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[str, dict]] = None, effects: Optional[dict[str, dict]] = None, message: str = "", cooldown: int = 0, mp_cost: int = 0, stamina_cost: int = 0) -> None:
         if actions is None:
             actions = {}
         if effects is None:
@@ -44,6 +44,9 @@ class Skill():
         self.categories = []
         self.cooldown = cooldown
         self.current_cooldown = 0
+
+        self.mp_cost = mp_cost
+        self.stamina_cost = stamina_cost
 
         self.actions: list[IAction] = []
         for action_type, action_args in actions.items():
@@ -70,11 +73,13 @@ class Skill():
         effects = skill.get("effects", None)
         message = skill.get("message", None)
         cooldown = skill.get("cooldown", 0)
+        mp_cost = skill.get("mp_cost", 0)
+        stamina_cost = skill.get("stamina_cost", 0)
 
         if actions is None or effects is None or message is None:
             raise ValueError(f"Invalid data for skill {skill_name}")
         
-        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message, cooldown=cooldown)
+        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message, cooldown=cooldown, mp_cost=mp_cost, stamina_cost=stamina_cost)
     
     def update(self) -> None:
         if self.current_cooldown > 0:
@@ -87,6 +92,9 @@ class Skill():
 
         if self.on_cooldown():
             return False, f"{user_name} tried to use {self.get_name()} against {target.get_name()}, but its on cooldown (how stupid, lol)."
+        
+        if not self.user_has_costs():
+            return False, f"{user_name} tried to use {self.get_name()} against {target.get_name()}, but they dont have enough MP or Stamina (idiot)."
 
         succeeded = True
 
@@ -107,12 +115,13 @@ class Skill():
             self.current_cooldown = self.cooldown + 1
 
         if succeeded:
+            self.user_remove_costs()
             return True, self.message.format(user=user_name, opponent=target.get_name())
         else:
             return False, f"{user_name} tried to use {self.get_name()} against {target.get_name()}, but it failed."
 
     def is_usable(self) -> bool:
-        if self.user is None or self.on_cooldown():
+        if self.user is None or self.on_cooldown() or not self.user_has_costs():
             return False
         
         usable = True
@@ -120,6 +129,19 @@ class Skill():
             if not action.is_executable():
                 usable = False
         return usable
+    
+    def user_has_costs(self) -> bool:
+        if self.user is None:
+            return False
+        
+        return self.user.get_mp() >= self.mp_cost and self.user.get_stamina() >= self.stamina_cost
+    
+    def user_remove_costs(self) -> None:
+        if self.user is None:
+            return
+        
+        self.user.remove_mp(self.mp_cost)
+        self.user.remove_stamina(self.stamina_cost)
     
     def get_current_cooldown(self) -> int:
         return self.current_cooldown

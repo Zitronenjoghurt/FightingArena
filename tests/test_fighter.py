@@ -215,8 +215,8 @@ def test_get_usable_skills():
     fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
     fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
 
-    skill1 = Skill(name="stamina_drain", actions={"attack": {"damage": 10, "stamina_cost": 100}})
-    skill2 = Skill(name="mp_drain", actions={"attack": {"damage": 10, "mp_cost": 100}})
+    skill1 = Skill(name="stamina_drain", actions={"attack": {"damage": 10}}, stamina_cost=100)
+    skill2 = Skill(name="mp_drain", actions={"attack": {"damage": 10}}, mp_cost=100)
 
     fighter1.add_skills([skill1, skill2])
     assert fighter1.get_skills() == [skill1, skill2]
@@ -284,7 +284,7 @@ def test_can_attack():
     fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
     fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
 
-    skill = Skill(name="stamina_drain", actions={"attack": {"damage": 10, "stamina_cost": 10}})
+    skill = Skill(name="stamina_drain", actions={"attack": {"damage": 10}}, stamina_cost=10)
     fighter1.add_skill(skill=skill)
 
     assert fighter1.can_attack() == True

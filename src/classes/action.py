@@ -5,27 +5,14 @@ from ..interfaces.fighter_protocol import IFighter
 class Action():
     categories = []
     
-    def __init__(self, user: Optional[IFighter] = None, mp_cost: int = 0, stamina_cost: int = 0) -> None:
+    def __init__(self, user: Optional[IFighter] = None) -> None:
         self.user: Optional[IFighter] = user
-        self.mp_cost = mp_cost
-        self.stamina_cost = stamina_cost
 
     def execute(self, target: IFighter) -> bool:
         return True
 
     def is_executable(self) -> bool:
         return True
-    
-    def remove_costs(self) -> None:
-        if self.user is None:
-            return
-        self.user.remove_mp(self.mp_cost)
-        self.user.remove_stamina(self.stamina_cost)
-
-    def has_costs(self) -> bool:
-        if self.user is None:
-            return False
-        return self.user.get_mp() >= self.mp_cost and self.user.get_stamina() >= self.stamina_cost
     
     def get_categories(self) -> list[str]:
         return self.categories
@@ -36,46 +23,44 @@ class Action():
 class AttackAction(Action):
     categories = ["damage"]
 
-    def __init__(self, user: Optional[IFighter] = None, damage: int = 0, mp_cost: int = 0, stamina_cost: int = 0) -> None:
-        super().__init__(user, mp_cost, stamina_cost)
+    def __init__(self, user: Optional[IFighter] = None, damage: int = 0) -> None:
+        super().__init__(user)
         self.damage = damage
 
     def execute(self, target: IFighter) -> bool:
         if not self.is_executable():
             return False
         target.remove_hp(self.damage)
-        super().remove_costs()
         return True
 
     def is_executable(self) -> bool:
         if self.user is None:
             return False
-        return super().has_costs()
+        return True
 
 class HealAction(Action):
     categories = ["hp_regen"]
 
-    def __init__(self, user: Optional[IFighter] = None, amount: int = 0, mp_cost: int = 0, stamina_cost: int = 0):
-        super().__init__(user, mp_cost, stamina_cost)
+    def __init__(self, user: Optional[IFighter] = None, amount: int = 0):
+        super().__init__(user)
         self.amount = amount
 
     def execute(self, target: IFighter) -> bool:
         if not self.is_executable():
             return False
         target.add_hp(self.amount)
-        super().remove_costs()
         return True
 
     def is_executable(self) -> bool:
         if self.user is None:
             return False
-        return super().has_costs()
+        return True
     
 class LifeStealAction(Action):
     categories = ["damage", "hp_regen"]
 
-    def __init__(self, user: Optional[IFighter] = None, damage: int = 0, heal: int = 0, damage_is_heal: bool = False, heal_multiplier: float = 1, mp_cost: int = 0, stamina_cost: int = 0) -> None:
-        super().__init__(user, mp_cost, stamina_cost)
+    def __init__(self, user: Optional[IFighter] = None, damage: int = 0, heal: int = 0, damage_is_heal: bool = False, heal_multiplier: float = 1) -> None:
+        super().__init__(user)
         self.damage = damage
         self.heal = heal
 
@@ -88,13 +73,12 @@ class LifeStealAction(Action):
         target.remove_hp(self.damage)
         if self.user:
             self.user.add_hp(self.heal)
-        super().remove_costs()
         return True
 
     def is_executable(self) -> bool:
         if self.user is None:
             return False
-        return super().has_costs()
+        return True
     
 class ActionFactory():
     registry = {

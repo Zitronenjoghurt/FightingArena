@@ -21,7 +21,7 @@ def test_freeze():
     fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
     fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
 
-    skill = Skill(name="sword slash", actions={"attack": {"damage": 10, "stamina_cost": 10}})
+    skill = Skill(name="sword slash", actions={"attack": {"damage": 10}}, stamina_cost=10)
     freeze = EffectFactory.create_effect("freeze", {"duration": 3})
 
     fighter1.add_skill(skill=skill)
