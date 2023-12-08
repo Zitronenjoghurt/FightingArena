@@ -14,19 +14,19 @@ class IFighter(Protocol):
     def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int) -> bool:
         ...
 
-    def update(self) -> list[str]:
+    def update(self) -> None:
         ...
 
-    def get_next_move(self) -> tuple[ISkill, 'IFighter']:
+    def get_next_move(self) -> tuple[Optional[ISkill], Optional['IFighter']]:
         ...
 
-    def get_status(self) -> str:
+    def get_status(self) -> list[str]:
         ...
 
-    def execute_effects(self) -> list[str]:
+    def execute_effects(self) -> None:
         ...
 
-    def apply_effect(self, effect: IEffect) -> str:
+    def apply_effect(self, effect: IEffect) -> None:
         ...
 
     def has_effect(self, effect_name: str) -> bool:
@@ -65,7 +65,7 @@ class IFighter(Protocol):
     def get_usable_category_skills(self) -> dict[str, list[ISkill]]:
         ...
     
-    def update_usable_skills_by_category(self) -> dict[str, list[ISkill]]:
+    def update_usable_skills(self) -> None:
         ...
 
     def has_skill(self, skill_name: str) -> bool:

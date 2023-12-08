@@ -1,6 +1,6 @@
 import time
 from tabulate import tabulate
-from typing import Optional
+from typing import Mapping, Optional, Sequence
 from ..interfaces.fighter_protocol import IFighter
 
 LOG_OUTPUT_FILE_PATH = "output.txt"
@@ -17,7 +17,7 @@ class GameManager():
     LOG_FIGHTER_STATUS = "fighter_status"
     LOG_SKILL_USE = "skill_use"
     
-    def __init__(self, teams: dict[str, list[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> None:
+    def __init__(self, teams: Mapping[str, Sequence[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> None:
         if GameManager._instance is not None:
             return
         
@@ -34,7 +34,7 @@ class GameManager():
         self.add_teams(teams=teams)
 
     @staticmethod
-    def get_instance(teams: dict[str, list[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'GameManager':
+    def get_instance(teams: Mapping[str, Sequence[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'GameManager':
         if not GameManager._instance:
             GameManager._instance = GameManager(teams=teams, round_time=round_time, max_rounds=max_rounds, print_log=print_log, output_log=output_log)
         return GameManager._instance
@@ -126,7 +126,7 @@ class GameManager():
         round_message = self.get_round_message(round)
         print(round_message)
 
-    def get_round_message(self, round: int) -> None:
+    def get_round_message(self, round: int) -> str:
         round_message = [
             "==================================================",
             self.log.get_logs_string(round, [self.LOG_GAME_STATUS_TOP]),
@@ -137,7 +137,7 @@ class GameManager():
         ]
         return '\n'.join(round_message)
     
-    def get_start_message(self) -> None:
+    def get_start_message(self) -> str:
         return self.log.get_logs_string(0, [self.LOG_GAME_STATUS_TOP]) + "\n"
     
     def log_output_txt(self) -> None:
@@ -149,13 +149,13 @@ class GameManager():
         with open(LOG_OUTPUT_FILE_PATH, "w") as file:
             file.write(log_string)
 
-    def log_message(self, log_type: str, message: str) -> None:
+    def log_message(self, log_type: str, message: str | list) -> None:
         self.log.log_message(round=self.round, log_type=log_type, message=message)
 
-    def add_teams(self, teams: dict[str, list[IFighter]]) -> None:
+    def add_teams(self, teams: Mapping[str, Sequence[IFighter]]) -> None:
         for team_name, fighters in teams.items():
             if self.teams.get(team_name, None) is None:
-                self.teams[team_name] = fighters
+                self.teams[team_name] = list(fighters)
             else:
                 self.teams[team_name].extend(fighters)
             for fighter in fighters:
@@ -188,16 +188,16 @@ class GameLog():
     def __init__(self) -> None:
         self.round_logs: dict[int, dict[str, list[str]]] = {}
     
-    def log_message(self, round: int, log_type: str, message: str) -> None:
+    def log_message(self, round: int, log_type: str, message: str | list) -> None:
         if round not in self.round_logs:
             self.round_logs[round] = {}
 
         if log_type not in self.round_logs[round]:
             self.round_logs[round][log_type] = []
 
-        self.round_logs[round][log_type].append(message)
+        self.round_logs[round][log_type].append(message) # type: ignore
 
-    def get_logs_string(self, round: int, log_types: list[str]) -> None:
+    def get_logs_string(self, round: int, log_types: list[str]) -> str:
         if round not in self.round_logs:
             return ""
         

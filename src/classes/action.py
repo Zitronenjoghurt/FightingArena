@@ -6,7 +6,7 @@ class Action():
     categories = []
     
     def __init__(self, user: Optional[IFighter] = None, mp_cost: int = 0, stamina_cost: int = 0) -> None:
-        self.user = user
+        self.user: Optional[IFighter] = user
         self.mp_cost = mp_cost
         self.stamina_cost = stamina_cost
 
@@ -86,7 +86,8 @@ class LifeStealAction(Action):
         if not self.is_executable():
             return False
         target.remove_hp(self.damage)
-        self.user.add_hp(self.heal)
+        if self.user:
+            self.user.add_hp(self.heal)
         super().remove_costs()
         return True
 

@@ -1,10 +1,11 @@
 import json
 import os
-from .game_manager import GameManager
 from typing import Optional
 from .ai_behavior import AIBehavior, AIBehaviorFactory
+from .game_manager import GameManager
 from .skill import Skill
 from ..interfaces.effect_protocol import IEffect
+from ..interfaces.fighter_protocol import IFighter
 from ..interfaces.skill_protocol import ISkill
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +42,7 @@ class Fighter():
         self.skills: dict[str, ISkill] = {}
 
         self.usable_skill_categories = []
-        self.usable_category_skills: dict[str, ISkill] = {}
+        self.usable_category_skills: dict[str, list[ISkill]] = {}
 
         self.allowed_to_attack = True
         self.has_attacked_this_round = False
@@ -49,7 +50,7 @@ class Fighter():
         self.behavior: AIBehavior = AIBehaviorFactory.create_behavior(behavior_name=behavior_name, fighter=self)
 
     @staticmethod
-    def load_from_file(fighter_class_name: str, fighter_name: str = "no_name") -> 'Fighter':
+    def load_from_file(fighter_class_name: str, fighter_name: str = "no_name") -> IFighter:
         fighter_file_path = os.path.join(FIGHTERS_FILE_PATH, f"{fighter_class_name}.json")
 
         try:
@@ -61,7 +62,7 @@ class Fighter():
             raise ValueError(f"Fighter class {fighter_class_name} does not exist. Make sure {fighter_file_path} exists.")
 
     @staticmethod
-    def create_from_dict(data: dict) -> 'Fighter':
+    def create_from_dict(data: dict) -> IFighter:
         max_hp = data.get("max_hp", None)
         max_mp = data.get("max_mp", None)
         max_stamina = data.get("max_stamina", None)
@@ -103,7 +104,7 @@ class Fighter():
 
         self.update_usable_skills()
 
-    def get_next_move(self) -> tuple[ISkill, 'Fighter']:
+    def get_next_move(self) -> tuple[Optional[ISkill], Optional[IFighter]]:
         skill, opponent = self.behavior.select_skill_and_opponent()
         
         return skill, opponent
@@ -158,7 +159,7 @@ class Fighter():
     def get_effects(self) -> list[str]:
         return list(self.effects.keys())
 
-    def use_skill(self, skill_name: str, target: 'Fighter') -> bool:
+    def use_skill(self, skill_name: str, target: IFighter) -> bool:
         skill = self.get_skill(skill_name)
         if skill is None or not self.can_attack():
             return False

@@ -1,13 +1,13 @@
 from typing import Protocol
 
 class IEffect(Protocol):
-    def execute(self, target: object) -> str:
+    def execute(self, target) -> str:
         ...
 
-    def on_apply(self, target: object) -> None:
+    def on_apply(self, target) -> None:
         ...
 
-    def on_remove(self) -> None:
+    def on_remove(self, target) -> None:
         ...
 
     def get_duration(self) -> int:

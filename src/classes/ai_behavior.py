@@ -8,7 +8,7 @@ class AIBehavior():
     def __init__(self, fighter: IFighter) -> None:
         self.fighter = fighter
 
-    def select_skill_and_opponent(self) -> tuple[ISkill, IFighter]:
+    def select_skill_and_opponent(self) -> tuple[Optional[ISkill], Optional[IFighter]]:
         skill = self.select_random_skill()
         opponent = self.select_random_opponent()
         return skill, opponent

@@ -6,6 +6,9 @@ class Effect():
     message = ""
 
     DISALLOW_ATTACK_EFFECTS = ["frozen"]
+
+    def __init__(self, duration: int) -> None:
+        self.duration = duration
     
     def execute(self, target: IFighter) -> str:
         return ""
@@ -31,7 +34,7 @@ class BurnEffect(Effect):
     message = "{target} is burning, -{damage}HP"
 
     def __init__(self, duration: int, damage: int) -> None:
-        self.duration = duration
+        super().__init__(duration=duration)
         self.damage = damage
 
     def execute(self, target: IFighter) -> str:
@@ -42,9 +45,6 @@ class FreezeEffect(Effect):
     name = "frozen"
     categories = ["frozen"]
     message = "{target} is frozen and unable to attack."
-
-    def __init__(self, duration: int) -> None:
-        self.duration = duration
 
     def execute(self, target: IFighter) -> str:
         if not target.has_attacked():

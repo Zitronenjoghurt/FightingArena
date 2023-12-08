@@ -32,7 +32,7 @@ class SkillLibrary():
         return self.library.get(skill_name, None)
 
 class Skill():
-    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[dict]] = None, effects: Optional[dict[dict]] = None, message: str = "") -> None:
+    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[str, dict]] = None, effects: Optional[dict[str, dict]] = None, message: str = "") -> None:
         if actions is None:
             actions = {}
         if effects is None:
@@ -89,10 +89,14 @@ class Skill():
             for effect in self.effects:
                 target.apply_effect(effect)
 
+        user_name = "no_name"
+        if self.user:
+            user_name = self.user.get_name()
+
         if succeeded:
-            return True, self.message.format(user=self.user.get_name(), opponent=target.get_name())
+            return True, self.message.format(user=user_name, opponent=target.get_name())
         else:
-            return False, f"{self.user.get_name()} tried to use {self.get_name()} against {target.get_name()}, but it failed."
+            return False, f"{user_name} tried to use {self.get_name()} against {target.get_name()}, but it failed."
 
     def is_usable(self) -> bool:
         if self.user is None:

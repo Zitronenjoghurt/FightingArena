@@ -2,10 +2,10 @@ from typing import Protocol
 
 class ISkill(Protocol):
     @staticmethod
-    def create_skill(skill_name: str, fighter: object) -> 'ISkill':
+    def create_skill(skill_name: str, fighter) -> 'ISkill':
         ...
 
-    def use(self, target: object) -> tuple[bool, str]:
+    def use(self, target) -> tuple[bool, str]:
         ...
 
     def is_usable(self) -> bool:
@@ -20,5 +20,5 @@ class ISkill(Protocol):
     def add_categories(self, categories: list[str]) -> None:
         ...
 
-    def add_user(self, user: object) -> None:
+    def add_user(self, user) -> None:
         ...
