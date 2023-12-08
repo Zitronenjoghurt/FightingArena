@@ -88,8 +88,70 @@ Example of the contens in `skills.json`:
 
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
-|`actions`|`yes`|dict|The name of the fighter class.||`{"attack": {"damage": 150, "stamina_cost": 20}}`|
-|`effects`|`yes`|dict|The maximum HP fighters of this class have.||`{"burn": {"duration": 3, "damage": 25}}`|
+|`actions`|`yes`|dict|The name of the fighter class. (Look in the actions subsection for more info).||`{"attack": {"damage": 150, "stamina_cost": 20}}`|
+|`effects`|`yes`|dict|The maximum HP fighters of this class have. (Look in the effects subsection for more info).||`{"burn": {"duration": 3, "damage": 25}}`|
 |`cooldown`|`no`|int|The amount of rounds that have to pass before the fighter can use this skill again.|`0`|`3`|
 |`message`|`yes`|str|The message that is output when the skill is used.||`"{user} throws fireball at {opponent}."`|
 |`themes`|`yes`|list|Thematic context of this skill. Will be used to allow random generation of skillsets based on themes.||`["fire", "magic", "ranged"]`|
+
+## Actions
+Actions are predetermined tasks a skill will fulfill once it is used. There is a predefined set of actions you can add to skills. You can specify different parameters for different actions.
+
+Actions are added as dicts to the actions-dict of a skill, for example:
+```json
+"actions": {
+    "attack": {"damage": 150, "stamina_cost": 20},
+    "heal": {"amount": 50}
+},
+```
+
+### attack
+Will deal a specified amount of damage to the target.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`damage`|`no`|int|The amount of damage the action is supposed to deal to the target.|`0`|`100`|
+|`mp_cost`|`no`|int|The amount of mp it costs to use this action.|`0`|`20`|
+|`stamina_cost`|`no`|int|The amount of stamina it costs the user to use this action.|`0`|`20`|
+
+### heal
+Will heal a specified amount of HP for the user.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`amount`|`no`|int|The amount of hp this action will heal to the user.|`0`|`100`|
+|`mp_cost`|`no`|int|The amount of mp it costs the user to use this action.|`0`|`20`|
+|`stamina_cost`|`no`|int|The amount of stamina it costs the user to use this action.|`0`|`20`|
+
+### lifesteal
+Will deal a specified amount of damage to the target and heal a specified amount of HP for the user.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`damage`|`no`|int|The amount of damage the action is supposed to deal to the target.|`0`|`100`|
+|`heal`|`no`|int|The amount of hp this action will heal to the user.|`0`|`100`|
+|`damage_is_heal`|`no`|bool|If the amount of hp healed is supposed to depend on the dealt damage.|`False`|`True`|
+|`heal_multiplier`|`no`|float|If `damage_is_heal` is true, this will multiply the amount of HP healed by the specified factor.|`1`|`1.5`, `2`|
+|`mp_cost`|`no`|int|The amount of mp it costs the user to use this action.|`0`|`20`|
+|`stamina_cost`|`no`|int|The amount of stamina it costs the user to use this action.|`0`|`20`|
+
+## Effects
+Effects are predetermined tasks that take effect on the target every round for a specified amount of rounds. There is a predefined set of effects you can add to skills. You can specify different parameters for different effects.
+
+Effects are added as dicts to the effects-dict of a skill, for example:
+```json
+"effects": {
+    "burn": {"duration": 3, "damage": 25},
+    "freeze": {"duration": 2}
+}
+```
+
+### burn
+Will deal damage to the target every round for a specified amount of rounds.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`duration`|`no`|int|The amount of rounds this effect will last (including the round its applied).|`0`|`3`|
+|`damage`|`no`|int|The amount of damage dealt to the target every round.|`0`|`25`|
+
+### freeze
+Will freeze the target and make them unable to attack for a specified amount of rounds.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`duration`|`no`|int|The amount of rounds this effect will last (including the round its applied).|`0`|`3`|
