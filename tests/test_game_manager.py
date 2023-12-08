@@ -4,8 +4,8 @@ from src.classes.game_manager import GameManager
 def test_init():
     GameManager.reset_instance()
 
-    barbarian = Fighter.load_from_file("debug_barbarian")
-    wizard = Fighter.load_from_file("debug_wizard")
+    barbarian = Fighter.load_from_file(".debug_barbarian")
+    wizard = Fighter.load_from_file(".debug_wizard")
 
     teams = {"A": [barbarian], "B": [wizard]}
 
@@ -17,8 +17,8 @@ def test_init():
 def test_example_game():
     GameManager.reset_instance()
 
-    barbarian = Fighter.load_from_file("debug_barbarian", "Barbarian")
-    wizard = Fighter.load_from_file("debug_wizard", "Wizard")
+    barbarian = Fighter.load_from_file(".debug_barbarian", "Barbarian")
+    wizard = Fighter.load_from_file(".debug_wizard", "Wizard")
 
     teams = {"A": [barbarian], "B": [wizard]}
 
@@ -76,10 +76,10 @@ def test_example_game():
 def test_add_teams():
     GameManager.reset_instance()
 
-    barbarian1 = Fighter.load_from_file("debug_barbarian")
-    barbarian2 = Fighter.load_from_file("debug_barbarian")
-    wizard1 = Fighter.load_from_file("debug_wizard")
-    wizard2 = Fighter.load_from_file("debug_wizard")
+    barbarian1 = Fighter.load_from_file(".debug_barbarian")
+    barbarian2 = Fighter.load_from_file(".debug_barbarian")
+    wizard1 = Fighter.load_from_file(".debug_wizard")
+    wizard2 = Fighter.load_from_file(".debug_wizard")
 
     teams = {"A": [barbarian1]}
     gm = GameManager.get_instance(teams=teams)
@@ -96,10 +96,10 @@ def test_add_teams():
 def test_get_team_name():
     GameManager.reset_instance()
 
-    barbarian1 = Fighter.load_from_file("debug_barbarian")
-    barbarian2 = Fighter.load_from_file("debug_barbarian")
-    wizard1 = Fighter.load_from_file("debug_wizard")
-    wizard2 = Fighter.load_from_file("debug_wizard")
+    barbarian1 = Fighter.load_from_file(".debug_barbarian")
+    barbarian2 = Fighter.load_from_file(".debug_barbarian")
+    wizard1 = Fighter.load_from_file(".debug_wizard")
+    wizard2 = Fighter.load_from_file(".debug_wizard")
 
     teams = {"A": [barbarian1, barbarian2], "B": [wizard1, wizard2]}
     gm = GameManager.get_instance(teams=teams)
@@ -115,10 +115,10 @@ def test_get_team_name():
 def test_get_fighter_team():
     GameManager.reset_instance()
 
-    barbarian1 = Fighter.load_from_file("debug_barbarian")
-    barbarian2 = Fighter.load_from_file("debug_barbarian")
-    wizard1 = Fighter.load_from_file("debug_wizard")
-    wizard2 = Fighter.load_from_file("debug_wizard")
+    barbarian1 = Fighter.load_from_file(".debug_barbarian")
+    barbarian2 = Fighter.load_from_file(".debug_barbarian")
+    wizard1 = Fighter.load_from_file(".debug_wizard")
+    wizard2 = Fighter.load_from_file(".debug_wizard")
 
     teams = {"A": [barbarian1, barbarian2], "B": [wizard1, wizard2]}
     gm = GameManager.get_instance(teams=teams)
@@ -133,10 +133,10 @@ def test_get_fighter_team():
 def test_get_opponents():
     GameManager.reset_instance()
     
-    barbarian1 = Fighter.load_from_file("debug_barbarian")
-    barbarian2 = Fighter.load_from_file("debug_barbarian")
-    wizard1 = Fighter.load_from_file("debug_wizard")
-    wizard2 = Fighter.load_from_file("debug_wizard")
+    barbarian1 = Fighter.load_from_file(".debug_barbarian")
+    barbarian2 = Fighter.load_from_file(".debug_barbarian")
+    wizard1 = Fighter.load_from_file(".debug_wizard")
+    wizard2 = Fighter.load_from_file(".debug_wizard")
 
     teams = {"A": [barbarian1, barbarian2], "B": [wizard1, wizard2]}
     gm = GameManager.get_instance(teams=teams)
@@ -151,10 +151,10 @@ def test_get_opponents():
 def test_check_win_condition():
     GameManager.reset_instance()
 
-    barbarian1 = Fighter.load_from_file("debug_barbarian")
-    barbarian2 = Fighter.load_from_file("debug_barbarian")
-    wizard1 = Fighter.load_from_file("debug_wizard")
-    wizard2 = Fighter.load_from_file("debug_wizard")
+    barbarian1 = Fighter.load_from_file(".debug_barbarian")
+    barbarian2 = Fighter.load_from_file(".debug_barbarian")
+    wizard1 = Fighter.load_from_file(".debug_wizard")
+    wizard2 = Fighter.load_from_file(".debug_wizard")
 
     teams = {"A": [barbarian1, barbarian2], "B": [wizard1, wizard2]}
     gm = GameManager.get_instance(teams=teams)

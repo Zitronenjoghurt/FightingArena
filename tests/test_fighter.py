@@ -16,8 +16,8 @@ def test_init():
     assert fighter.get_stamina() == 100
 
 def test_load_from_file():
-    barbarian = Fighter.load_from_file("debug_barbarian", "George")
-    wizard = Fighter.load_from_file("debug_wizard", "Gandalf")
+    barbarian = Fighter.load_from_file(".debug_barbarian", "George")
+    wizard = Fighter.load_from_file(".debug_wizard", "Gandalf")
 
     assert barbarian.get_name() == "George"
     assert barbarian.get_hp() == 100

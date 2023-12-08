@@ -1,0 +1,10 @@
+{
+    "name": "wizard",
+    "max_hp": 800,
+    "max_mp": 200,
+    "max_stamina": 50,
+    "skills": [
+        {"name": "fireball", "level": 1},
+        {"name": "ice storm", "level": 1}
+    ]
+}

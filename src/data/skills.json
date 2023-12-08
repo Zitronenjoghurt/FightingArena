@@ -5,7 +5,7 @@
         },
         "effects": {},
         "message": "{user} uses their sword to slash {opponent}.",
-        "themes": ["sword", "knight", "physical", "melee"]
+        "themes": []
     },
     "debug fireball": {
         "actions": {
@@ -15,6 +15,34 @@
             "burn": {"duration": 3, "damage": 5}
         },
         "message": "{user} throws fireball at {opponent}.",
+        "themes": []
+    },
+    "sword slash": {
+        "actions": {
+            "attack": {"damage": 150, "stamina_cost": 20}
+        },
+        "effects": {},
+        "message": "{user} uses their sword to slash {opponent}.",
+        "themes": ["sword", "knight", "physical", "melee"]
+    },
+    "fireball": {
+        "actions": {
+            "attack": {"damage": 100, "mp_cost": 20}
+        },
+        "effects": {
+            "burn": {"duration": 3, "damage": 25}
+        },
+        "message": "{user} throws fireball at {opponent}.",
         "themes": ["fire", "magic", "ranged"]
+    },
+    "ice storm": {
+        "actions": {
+            "attack": {"damage": 5, "mp_cost": 100}
+        },
+        "effects": {
+            "freeze": {"duration": 2}
+        },
+        "message": "{user} traps {opponent} in an ice storm.",
+        "themes": ["ice", "magic", "ranged"]
     }
 }
