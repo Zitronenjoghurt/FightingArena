@@ -1,6 +1,8 @@
 # FightingArena (Work in progress)
 A simulation of random generated fighters fighting against each other in turn-based matches with the main goal to be easily extendable.
 
+You can navigate this readme easier by using the button with the 3 dots and lines. It will open a table of contents.
+
 ## Command line
 This instructions will explain how to set up FightingArena for use via command line.
 
