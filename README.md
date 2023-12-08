@@ -114,24 +114,32 @@ Will deal the specified amount of damage to the target.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`damage`|`no`|int|The amount of damage the action is supposed to deal to the target.|`0`|`100`|
+|`on_self`|`no`|bool|If action is applied to the user after use.|`False`|`True`|
+|`on_target`|`no`|bool|If action is applied to the target after use.|`False`|`True`|
 
 ### heal
 Will heal the specified amount of HP for the target.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`amount`|`no`|int|The amount of hp this action will heal to the user.|`0`|`100`|
+|`on_self`|`no`|bool|If action is applied to the user after use.|`False`|`True`|
+|`on_target`|`no`|bool|If action is applied to the target after use.|`False`|`True`|
 
 ### regen_mp
 Will regenerate the specified amount of MP for the user.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`amount`|`no`|int|The amount of mp this action will add to the user.|`0`|`100`|
+|`on_self`|`no`|bool|If action is applied to the user after use.|`False`|`True`|
+|`on_target`|`no`|bool|If action is applied to the target after use.|`False`|`True`|
 
 ### regen_stamina
 Will regenerate the specified amount of stamina for the user.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`amount`|`no`|int|The amount of stamina this action will add to the user.|`0`|`100`|
+|`on_self`|`no`|bool|If action is applied to the user after use.|`False`|`True`|
+|`on_target`|`no`|bool|If action is applied to the target after use.|`False`|`True`|
 
 ### lifesteal
 Will deal the specified amount of damage to the target and heal a specified amount of HP for the user.

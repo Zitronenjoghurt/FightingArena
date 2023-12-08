@@ -5,8 +5,8 @@ def test_attack():
     fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
     fighter2 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
 
-    attack1 = ActionFactory.create_action(action_type="attack", action_args={"damage": 10}, user=fighter1)
-    attack2 = ActionFactory.create_action(action_type="attack", action_args={"damage": 25}, user=fighter2)
+    attack1 = ActionFactory.create_action(action_type="attack", action_args={"damage": 10, "on_target": True}, user=fighter1)
+    attack2 = ActionFactory.create_action(action_type="attack", action_args={"damage": 25, "on_target": True}, user=fighter2)
 
     assert attack1.is_executable() == True
     assert attack1.execute(fighter2) == True
@@ -26,12 +26,12 @@ def test_heal():
     fighter1.set_hp(75)
     fighter2.set_hp(90)
 
-    heal1 = ActionFactory.create_action(action_type="heal", action_args={"amount": 25}, user=fighter1)
-    heal2 = ActionFactory.create_action(action_type="heal", action_args={"amount": 10}, user=fighter2)
+    heal1 = ActionFactory.create_action(action_type="heal", action_args={"amount": 25, "on_self": True}, user=fighter1)
+    heal2 = ActionFactory.create_action(action_type="heal", action_args={"amount": 10, "on_target": True}, user=fighter2)
 
     # heal 1
     assert heal1.is_executable() == True
-    assert heal1.execute(fighter1) == True
+    assert heal1.execute(fighter2) == True
     fighter1.update()
     fighter2.update()
     assert fighter1.get_hp() == 100
@@ -50,12 +50,12 @@ def test_regen_mp():
     fighter1.set_mp(75)
     fighter2.set_mp(90)
 
-    regen1 = ActionFactory.create_action(action_type="regen_mp", action_args={"amount": 25}, user=fighter1)
-    regen2 = ActionFactory.create_action(action_type="regen_mp", action_args={"amount": 10}, user=fighter2)
+    regen1 = ActionFactory.create_action(action_type="regen_mp", action_args={"amount": 25, "on_self": True}, user=fighter1)
+    regen2 = ActionFactory.create_action(action_type="regen_mp", action_args={"amount": 10, "on_target": True}, user=fighter2)
 
     # regen 1
     assert regen1.is_executable() == True
-    assert regen1.execute(fighter1) == True
+    assert regen1.execute(fighter2) == True
     fighter1.update()
     fighter2.update()
     assert fighter1.get_mp() == 100
@@ -74,12 +74,12 @@ def test_regen_stamina():
     fighter1.set_stamina(75)
     fighter2.set_stamina(90)
 
-    regen1 = ActionFactory.create_action(action_type="regen_stamina", action_args={"amount": 25}, user=fighter1)
-    regen2 = ActionFactory.create_action(action_type="regen_stamina", action_args={"amount": 10}, user=fighter2)
+    regen1 = ActionFactory.create_action(action_type="regen_stamina", action_args={"amount": 25, "on_self": True}, user=fighter1)
+    regen2 = ActionFactory.create_action(action_type="regen_stamina", action_args={"amount": 10, "on_target": True}, user=fighter2)
 
     # regen 1
     assert regen1.is_executable() == True
-    assert regen1.execute(fighter1) == True
+    assert regen1.execute(fighter2) == True
     fighter1.update()
     fighter2.update()
     assert fighter1.get_stamina() == 100
