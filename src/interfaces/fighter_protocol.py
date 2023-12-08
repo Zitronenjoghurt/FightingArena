@@ -11,7 +11,7 @@ class IFighter(Protocol):
     def create_from_dict(data: dict) -> 'IFighter':
         ...
         
-    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, name: str, behavior_name: str) -> tuple[bool, str]:
+    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, initiative: int, name: str, behavior_name: str) -> tuple[bool, str]:
         ...
 
     def update(self) -> None:
@@ -110,6 +110,9 @@ class IFighter(Protocol):
     def get_stamina(self) -> int:
         ...
 
+    def get_initiative(self) -> int:
+        ...
+
     def set_name(self, name: str) -> None:
         ...
 
@@ -132,6 +135,9 @@ class IFighter(Protocol):
         ...
 
     def set_stamina(self, stamina: int) -> None:
+        ...
+
+    def set_initiative(self, initiative: int) -> None:
         ...
 
     def add_hp(self, hp: int) -> None:

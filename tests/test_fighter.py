@@ -23,12 +23,14 @@ def test_load_from_file():
     assert barbarian.get_hp() == 100
     assert barbarian.get_mp() == 0
     assert barbarian.get_stamina() == 100
+    assert barbarian.get_initiative() == 100
     assert barbarian.skill_usable("debug sword") == True
 
     assert wizard.get_name() == "Gandalf"
     assert wizard.get_hp() == 80
     assert wizard.get_mp() == 100
     assert wizard.get_stamina() == 20
+    assert wizard.get_initiative() == 100
     assert wizard.skill_usable("debug fireball") == True
 
     assert barbarian.use_skill("debug sword", wizard) == True
@@ -78,12 +80,14 @@ def test_setters():
     fighter.set_max_hp(200)
     fighter.set_max_mp(200)
     fighter.set_max_stamina(200)
+    fighter.set_initiative(200)
 
     assert fighter.get_name() == "no_name"
     assert fighter.get_team() == ""
     assert fighter.get_max_hp() == 200
     assert fighter.get_max_mp() == 200
     assert fighter.get_max_stamina() == 200
+    assert fighter.get_initiative() == 200
 
     fighter.set_name("George")
     fighter.set_team("A")

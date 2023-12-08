@@ -16,10 +16,11 @@ class Fighter():
                  max_hp: int = 0,
                  max_mp: int = 0,
                  max_stamina: int = 0,
+                 initiative: int = 1,
                  name: str = "no_name",
                  behavior_name: str = "random"
                  ) -> None:
-        validate_init, invalid_init_message = self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, name=name, behavior_name=behavior_name)
+        validate_init, invalid_init_message = self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, initiative=initiative, name=name, behavior_name=behavior_name)
         if not validate_init:
             raise ValueError(f"\n====================\nInvalid init parameters for fighter {name}: {invalid_init_message}\n====================".upper())
         
@@ -31,6 +32,8 @@ class Fighter():
         self.mp = self.max_mp
         self.max_stamina = max_stamina
         self.stamina = self.max_stamina
+
+        self.initiative = initiative
 
         self.hp_difference = 0
         self.previous_hp_difference = 0
@@ -71,13 +74,14 @@ class Fighter():
         max_hp = data.get("max_hp", 0)
         max_mp = data.get("max_mp", 0)
         max_stamina = data.get("max_stamina", 0)
+        initiative = data.get("initiative", 1)
         skills = data.get("skills", [])
         name = data.get("name", "no_name")
         
         if not isinstance(skills, list):
             raise ValueError(f"Fighter overall skill data is invalid.\n{skills}")
         
-        fighter = Fighter(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, name=name)
+        fighter = Fighter(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, initiative=initiative, name=name)
 
         for skill_data in skills:
             skill_name = skill_data.get("name", None)
@@ -89,13 +93,15 @@ class Fighter():
         fighter.update()
         return fighter
         
-    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, name: str, behavior_name: str) -> tuple[bool, str]:
+    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, initiative: int, name: str, behavior_name: str) -> tuple[bool, str]:
         if not isinstance(max_hp, int):
             return False, "max_hp has to be of type int"
         if not isinstance(max_mp, int):
             return False, "max_mphas to be of type int"
         if not isinstance(max_stamina, int):
             return False, "max_stamina has to be of type int"
+        if not isinstance(initiative, int):
+            return False, "initiative has to be of type int"
         if not isinstance(name, str):
             return False, "name has to be of type string"
         if not isinstance(behavior_name, str):
@@ -263,6 +269,9 @@ class Fighter():
     def get_stamina(self) -> int:
         return self.stamina
     
+    def get_initiative(self) -> int:
+        return self.initiative
+    
     def set_name(self, name: str) -> None:
         self.name = name
     
@@ -286,6 +295,9 @@ class Fighter():
 
     def set_stamina(self, stamina: int) -> None:
         self.stamina = stamina
+
+    def set_initiative(self, initiative: int) -> None:
+        self.initiative = initiative
 
     def add_hp(self, hp: int) -> None:
         self.hp_difference += hp

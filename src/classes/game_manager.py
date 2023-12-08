@@ -177,6 +177,7 @@ class GameManager():
         fighters = []
         for fighter_list in self.teams.values():
             fighters.extend(fighter_list)
+        fighters.sort(key=lambda fighter: fighter.get_initiative(), reverse=True)
         return fighters
     
     def get_opponents(self, fighter: IFighter) -> list[IFighter]:

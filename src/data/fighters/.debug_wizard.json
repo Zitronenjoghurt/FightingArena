@@ -3,6 +3,7 @@
     "max_hp": 80,
     "max_mp": 100,
     "max_stamina": 20,
+    "initiative": 100,
     "skills": [
         {"name": "debug fireball", "level": 1}
     ]

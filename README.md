@@ -50,6 +50,7 @@ Example of the contents in `barbarian.json`:
 |`max_hp`|`no`|int|The maximum HP fighters of this class have.|`0`|`1000`|
 |`max_mp`|`no`|int|The maximum MP fighters of this class have.|`0`|`200`|
 |`max_stamina`|`no`|int|The maximum amount of Stamina fighters of this class have.|`0`|`200`|
+|`initiative`|`no`|int|How fast fighters of this class are. The higher the initiative, the earlier they will attack.|`1`|`40`|
 |`skills`|`no`|list|Which skills characters of this class have. (Look in the fighter skills subsection for more info).|`[]`|`[{"name": "sword slash", "level": 1}]`|
 
 ### Fighter skills

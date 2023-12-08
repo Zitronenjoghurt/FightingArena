@@ -3,6 +3,7 @@
     "max_hp": 1000,
     "max_mp": 0,
     "max_stamina": 250,
+    "initiative": 40,
     "skills": [
         {"name": "sword slash", "level": 1}
     ]
