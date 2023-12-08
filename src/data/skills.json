@@ -40,5 +40,14 @@
         "cooldown": 3,
         "message": "{user} takes a rest and regenerates 100 HP and 20 Stamina.",
         "themes": ["passive"]
+    },
+    "magic reset": {
+        "actions": {
+            "regen_mp": {"amount": 150, "on_self": true}
+        },
+        "effects": {},
+        "cooldown": 3,
+        "message": "{user} concentrates on their inner aura and regenerates 150 MP.",
+        "themes": ["passive"]
     }
 }

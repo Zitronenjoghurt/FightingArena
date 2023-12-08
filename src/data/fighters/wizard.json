@@ -6,6 +6,7 @@
     "initiative": 100,
     "skills": [
         {"name": "fireball", "level": 1},
-        {"name": "ice storm", "level": 1}
+        {"name": "ice storm", "level": 1},
+        {"name": "magic reset", "level": 1}
     ]
 }

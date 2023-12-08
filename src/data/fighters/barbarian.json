@@ -5,6 +5,7 @@
     "max_stamina": 250,
     "initiative": 40,
     "skills": [
-        {"name": "sword slash", "level": 1}
+        {"name": "sword slash", "level": 1},
+        {"name": "rest", "level": 1}
     ]
 }
