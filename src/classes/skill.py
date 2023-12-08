@@ -11,6 +11,7 @@ from ..interfaces.fighter_protocol import IFighter
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SKILLS_FILE_PATH = os.path.join(CURRENT_DIR, '..', 'data', 'skills.json')
+DEBUG_SKILLS_FILE_PATH = os.path.join(CURRENT_DIR, '..', 'data', 'debug_skills.json')
 
 class SkillLibrary():
     library = None
@@ -21,8 +22,11 @@ class SkillLibrary():
     
     @staticmethod
     def __load_from_file() -> dict:
+        data = {}
         with open(SKILLS_FILE_PATH, 'r') as f:
-            data = json.load(f)
+            data.update(json.load(f))
+        with open(DEBUG_SKILLS_FILE_PATH, 'r') as f:
+            data.update(json.load(f))
         return data
     
     def get_skill_data(self, skill_name: str) -> Optional[dict]:

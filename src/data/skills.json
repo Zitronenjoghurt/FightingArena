@@ -36,31 +36,9 @@
             "heal": {"amount": 100, "on_self": true},
             "regen_stamina": {"amount": 20, "on_self": true}
         },
-        "effects": {
-            "burn": {"duration": 3, "damage": 25, "on_target": true}
-        },
+        "effects": {},
         "cooldown": 3,
         "message": "{user} takes a rest and regenerates 100 HP and 20 Stamina.",
         "themes": ["passive"]
-    },
-    "debug sword": {
-        "actions": {
-            "attack": {"damage": 15, "on_target": true}
-        },
-        "effects": {},
-        "stamina_cost": 10,
-        "message": "{user} uses their sword to slash {opponent}.",
-        "themes": []
-    },
-    "debug fireball": {
-        "actions": {
-            "attack": {"damage": 10, "on_target": true}
-        },
-        "effects": {
-            "burn": {"duration": 3, "damage": 5, "on_target": true}
-        },
-        "mp_cost": 10,
-        "message": "{user} throws fireball at {opponent}.",
-        "themes": []
     }
 }
