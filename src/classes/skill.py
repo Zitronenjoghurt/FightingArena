@@ -109,7 +109,10 @@ class Skill():
                     succeeded = False
             
             for effect in self.effects:
-                target.apply_effect(effect)
+                if self.user and effect.apply_on_self():
+                    self.user.apply_effect(effect=effect)
+                if effect.apply_on_target():
+                    target.apply_effect(effect=effect)
         
         if self.cooldown > 0:
             self.current_cooldown = self.cooldown + 1

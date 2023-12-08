@@ -67,7 +67,7 @@ Example of the contens in `skills.json`:
 {
     "sword slash": {
         "actions": {
-            "attack": {"damage": 150}
+            "attack": {"damage": 150, "on_target": true}
         },
         "effects": {},
         "stamina_cost": 20,
@@ -76,10 +76,10 @@ Example of the contens in `skills.json`:
     },
     "fireball": {
         "actions": {
-            "attack": {"damage": 100}
+            "attack": {"damage": 100, "on_target": true}
         },
         "effects": {
-            "burn": {"duration": 3, "damage": 25}
+            "burn": {"duration": 3, "damage": 25, "on_target": true}
         },
         "mp_cost": 20,
         "message": "{user} throws fireball at {opponent}.",
@@ -156,8 +156,8 @@ Effects are predetermined tasks that take effect on the target every round for a
 Effects are added as dicts to the effects-dict of a skill, for example:
 ```json
 "effects": {
-    "burn": {"duration": 3, "damage": 25},
-    "freeze": {"duration": 2}
+    "burn": {"duration": 3, "damage": 25, "on_target": true},
+    "freeze": {"duration": 2, "on_target": true}
 }
 ```
 
@@ -167,9 +167,13 @@ Will deal damage to the target every round for a specified amount of rounds.
 |---|---|---|---|---|---|
 |`duration`|`no`|int|The amount of rounds this effect will last (including the round its applied).|`0`|`3`|
 |`damage`|`no`|int|The amount of damage dealt to the target every round.|`0`|`25`|
+|`on_self`|`no`|bool|If effect is applied to the user.|`False`|`True`|
+|`on_target`|`no`|bool|If effect is applied to the target.|`False`|`True`|
 
 ### freeze
 Will freeze the target and make them unable to attack for a specified amount of rounds.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`duration`|`no`|int|The amount of rounds this effect will last (including the round its applied).|`0`|`3`|
+|`on_self`|`no`|bool|If effect is applied to the user.|`False`|`True`|
+|`on_target`|`no`|bool|If effect is applied to the target.|`False`|`True`|

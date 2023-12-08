@@ -7,8 +7,10 @@ class Effect():
 
     DISALLOW_ATTACK_EFFECTS = ["frozen"]
 
-    def __init__(self, duration: int = 0) -> None:
+    def __init__(self, duration: int = 0, on_self: bool = False, on_target: bool = False) -> None:
         self.duration = duration
+        self.on_self = on_self
+        self.on_target = on_target
     
     def execute(self, target: IFighter) -> str:
         return ""
@@ -18,6 +20,12 @@ class Effect():
     
     def on_remove(self, target: IFighter) -> None:
         pass
+
+    def apply_on_self(self) -> bool:
+        return self.on_self
+    
+    def apply_on_target(self) -> bool:
+        return self.on_target
 
     def get_duration(self) -> int:
         return self.duration
@@ -33,8 +41,8 @@ class BurnEffect(Effect):
     categories = ["burning"]
     message = "{target} is burning, -{damage}HP"
 
-    def __init__(self, duration: int = 0, damage: int = 0) -> None:
-        super().__init__(duration=duration)
+    def __init__(self, duration: int = 0, damage: int = 0, on_self: bool = False, on_target: bool = False) -> None:
+        super().__init__(duration=duration, on_self=on_self, on_target=on_target)
         self.damage = damage
 
     def execute(self, target: IFighter) -> str:

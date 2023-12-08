@@ -13,7 +13,7 @@
             "attack": {"damage": 100, "on_target": true}
         },
         "effects": {
-            "burn": {"duration": 3, "damage": 25}
+            "burn": {"duration": 3, "damage": 25, "on_target": true}
         },
         "mp_cost": 20,
         "message": "{user} throws fireball at {opponent}.",
@@ -24,7 +24,7 @@
             "attack": {"damage": 5, "on_target": true}
         },
         "effects": {
-            "freeze": {"duration": 2}
+            "freeze": {"duration": 2, "on_target": true}
         },
         "mp_cost": 100,
         "cooldown": 3,
@@ -37,7 +37,7 @@
             "regen_stamina": {"amount": 20, "on_self": true}
         },
         "effects": {
-            "burn": {"duration": 3, "damage": 25}
+            "burn": {"duration": 3, "damage": 25, "on_target": true}
         },
         "cooldown": 3,
         "message": "{user} takes a rest and regenerates 100 HP and 20 Stamina.",
@@ -57,7 +57,7 @@
             "attack": {"damage": 10, "on_target": true}
         },
         "effects": {
-            "burn": {"duration": 3, "damage": 5}
+            "burn": {"duration": 3, "damage": 5, "on_target": true}
         },
         "mp_cost": 10,
         "message": "{user} throws fireball at {opponent}.",
