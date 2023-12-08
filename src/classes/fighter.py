@@ -19,8 +19,9 @@ class Fighter():
                  name: str = "no_name",
                  behavior_name: str = "random"
                  ) -> None:
-        if not self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina):
-            raise ValueError(f"Invalid init parameters for fighter class.")
+        validate_init, invalid_init_message = self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, name=name, behavior_name=behavior_name)
+        if not validate_init:
+            raise ValueError(f"\n====================\nInvalid init parameters for fighter {name}: {invalid_init_message}\n====================".upper())
         
         self.name = name
         self.team = ""
@@ -62,17 +63,16 @@ class Fighter():
             return Fighter.create_from_dict(data)
         except FileNotFoundError:
             raise ValueError(f"Fighter class {fighter_class_name} does not exist. Make sure {fighter_file_path} exists.")
+        except Exception as e:
+            raise ValueError(f"An error occured while creating the fighter {fighter_class_name} from the file {fighter_file_path}\nLook up to the other error messages to find out more.") from e
 
     @staticmethod
     def create_from_dict(data: dict) -> IFighter:
-        max_hp = data.get("max_hp", None)
-        max_mp = data.get("max_mp", None)
-        max_stamina = data.get("max_stamina", None)
-        skills = data.get("skills", None)
+        max_hp = data.get("max_hp", 0)
+        max_mp = data.get("max_mp", 0)
+        max_stamina = data.get("max_stamina", 0)
+        skills = data.get("skills", [])
         name = data.get("name", "no_name")
-
-        if any(var is None for var in [max_hp, max_mp, max_stamina, skills]):
-            raise ValueError(f"Fighter data is incomplete.")
         
         if not isinstance(skills, list):
             raise ValueError(f"Fighter overall skill data is invalid.\n{skills}")
@@ -89,11 +89,19 @@ class Fighter():
         fighter.update()
         return fighter
         
-    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int) -> bool:
-        if any(not isinstance(var, int) for var in [max_hp, max_mp, max_stamina]):
-            return False
-        
-        return True
+    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, name: str, behavior_name: str) -> tuple[bool, str]:
+        if not isinstance(max_hp, int):
+            return False, "max_hp has to be of type int"
+        if not isinstance(max_mp, int):
+            return False, "max_mphas to be of type int"
+        if not isinstance(max_stamina, int):
+            return False, "max_stamina has to be of type int"
+        if not isinstance(name, str):
+            return False, "name has to be of type string"
+        if not isinstance(behavior_name, str):
+            return False, "behavior_name has to be of type string"
+
+        return True, ""
 
     def update(self) -> None:
         self.execute_effects()

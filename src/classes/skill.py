@@ -42,6 +42,10 @@ class Skill():
         if effects is None:
             effects = {}
 
+        validate_init, invalid_init_message = self.validate_init_parameters(name=name, message=message, cooldown=cooldown, mp_cost=mp_cost, stamina_cost=stamina_cost)
+        if not validate_init:
+            raise ValueError(f"\n====================\nInvalid init parameters for skill {name}: {invalid_init_message}\n====================".upper())
+
         self.name = name
         self.message = message
         self.user: Optional[IFighter] = user
@@ -53,16 +57,22 @@ class Skill():
         self.stamina_cost = stamina_cost
 
         self.actions: list[IAction] = []
-        for action_type, action_args in actions.items():
-            action = ActionFactory.create_action(action_type=action_type, action_args=action_args, user=self.user)
-            self.add_categories(action.get_categories())
-            self.actions.append(action)
+        try:
+            for action_type, action_args in actions.items():
+                action = ActionFactory.create_action(action_type=action_type, action_args=action_args, user=self.user)
+                self.add_categories(action.get_categories())
+                self.actions.append(action)
+        except Exception as e:
+            raise ValueError(f"An error occured while creating the actions for the skill {self.name}") from e
 
         self.effects: list[IEffect] = []
-        for effect_type, effect_args in effects.items():
-            effect = EffectFactory.create_effect(effect_type=effect_type, effect_args=effect_args)
-            self.add_categories(effect.get_categories())
-            self.effects.append(effect)
+        try:
+            for effect_type, effect_args in effects.items():
+                effect = EffectFactory.create_effect(effect_type=effect_type, effect_args=effect_args)
+                self.add_categories(effect.get_categories())
+                self.effects.append(effect)
+        except Exception as e:
+            raise ValueError(f"An error occured while creating the effects for the skill {self.name}") from e
 
     @staticmethod
     def create_skill(skill_name: str, fighter: Optional[IFighter] = None) -> 'Skill':
@@ -80,10 +90,35 @@ class Skill():
         mp_cost = skill.get("mp_cost", 0)
         stamina_cost = skill.get("stamina_cost", 0)
 
-        if actions is None or effects is None or message is None:
-            raise ValueError(f"Invalid data for skill {skill_name}")
+        if actions is None:
+            raise ValueError(f"No actions defined for skill {skill_name}")
         
-        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message, cooldown=cooldown, mp_cost=mp_cost, stamina_cost=stamina_cost)
+        if effects is None:
+            raise ValueError(f"No effects defined for skill {skill_name}")
+        
+        if message is None:
+            raise ValueError(f"No message defined for skill {skill_name}")
+        
+        try:
+            skill = Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message, cooldown=cooldown, mp_cost=mp_cost, stamina_cost=stamina_cost)
+        except Exception as e:
+            raise ValueError(f"An error occured while trying to create skill {skill_name}\nLook up to the other error messages to find out more.") from e
+        
+        return skill
+    
+    def validate_init_parameters(self, name: str, message: str, cooldown: int, mp_cost: int, stamina_cost: int) -> tuple[bool, str]:
+        if not isinstance(name, str):
+            return False, "name has to be of type string"
+        if not isinstance(message, str):
+            return False, "message has to be of type string"
+        if not isinstance(cooldown, int):
+            return False, "cooldown has to be of type int"
+        if not isinstance(mp_cost, int):
+            return False, "mp_cost has to be of type int"
+        if not isinstance(stamina_cost, int):
+            return False, "stamina_cost has to be of type int"
+        
+        return True, ""
     
     def update(self) -> None:
         if self.current_cooldown > 0:
