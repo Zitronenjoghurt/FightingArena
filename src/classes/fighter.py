@@ -56,7 +56,9 @@ class Fighter():
         try:
             with open(fighter_file_path, 'r') as f:
                 data = json.load(f)
-                data["name"] = fighter_name
+                data_name = data.get("name", None)
+                if not data_name or fighter_name != "no_name":
+                    data["name"] = fighter_name
             return Fighter.create_from_dict(data)
         except FileNotFoundError:
             raise ValueError(f"Fighter class {fighter_class_name} does not exist. Make sure {fighter_file_path} exists.")
