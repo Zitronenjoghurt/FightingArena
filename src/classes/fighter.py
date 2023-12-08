@@ -102,6 +102,9 @@ class Fighter():
         self.mp = min(self.mp, self.max_mp)
         self.stamina = min(self.stamina, self.max_stamina)
 
+        for skill in self.get_skills():
+            skill.update()
+
         self.update_usable_skills()
 
     def get_next_move(self) -> tuple[Optional[ISkill], Optional[IFighter]]:

@@ -32,7 +32,7 @@ class SkillLibrary():
         return self.library.get(skill_name, None)
 
 class Skill():
-    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[str, dict]] = None, effects: Optional[dict[str, dict]] = None, message: str = "") -> None:
+    def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[str, dict]] = None, effects: Optional[dict[str, dict]] = None, message: str = "", cooldown: int = 0) -> None:
         if actions is None:
             actions = {}
         if effects is None:
@@ -42,6 +42,8 @@ class Skill():
         self.message = message
         self.user: Optional[IFighter] = user
         self.categories = []
+        self.cooldown = cooldown
+        self.current_cooldown = 0
 
         self.actions: list[IAction] = []
         for action_type, action_args in actions.items():
@@ -67,13 +69,25 @@ class Skill():
         actions = skill.get("actions", None)
         effects = skill.get("effects", None)
         message = skill.get("message", None)
+        cooldown = skill.get("cooldown", 0)
 
         if actions is None or effects is None or message is None:
             raise ValueError(f"Invalid data for skill {skill_name}")
         
-        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message)
+        return Skill(name=skill_name, user=fighter, actions=actions, effects=effects, message=message, cooldown=cooldown)
+    
+    def update(self) -> None:
+        if self.current_cooldown > 0:
+            self.current_cooldown -= 1
 
     def use(self, target: IFighter) -> tuple[bool, str]:
+        user_name = "no_name"
+        if self.user:
+            user_name = self.user.get_name()
+
+        if self.on_cooldown():
+            return False, f"{user_name} tried to use {self.get_name()} against {target.get_name()}, but its on cooldown (how stupid, lol)."
+
         succeeded = True
 
         if not self.is_usable():
@@ -88,10 +102,9 @@ class Skill():
             
             for effect in self.effects:
                 target.apply_effect(effect)
-
-        user_name = "no_name"
-        if self.user:
-            user_name = self.user.get_name()
+        
+        if self.cooldown > 0:
+            self.current_cooldown = self.cooldown + 1
 
         if succeeded:
             return True, self.message.format(user=user_name, opponent=target.get_name())
@@ -99,7 +112,7 @@ class Skill():
             return False, f"{user_name} tried to use {self.get_name()} against {target.get_name()}, but it failed."
 
     def is_usable(self) -> bool:
-        if self.user is None:
+        if self.user is None or self.on_cooldown():
             return False
         
         usable = True
@@ -107,6 +120,12 @@ class Skill():
             if not action.is_executable():
                 usable = False
         return usable
+    
+    def get_current_cooldown(self) -> int:
+        return self.current_cooldown
+    
+    def on_cooldown(self) -> bool:
+        return self.current_cooldown > 0
     
     def get_name(self) -> str:
         return self.name

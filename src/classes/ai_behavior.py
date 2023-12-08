@@ -14,17 +14,21 @@ class AIBehavior():
         return skill, opponent
     
     def select_random_skill(self) -> Optional[ISkill]:
-        skills = random.choice([self.fighter.get_usable_skills()])
-        if len(skills) == 0:
+        usable_skills = self.fighter.get_usable_skills()
+        if len(usable_skills) == 0:
             return None
-        return skills[0]
+        
+        skill = random.choice(usable_skills)
+        return skill
 
     def select_random_opponent(self) -> Optional[IFighter]:
         gm = GameManager.get_instance()
-        opponents = random.choice([gm.get_opponents(self.fighter)])
+        opponents = gm.get_opponents(self.fighter)
         if len(opponents) == 0:
             return None
-        return opponents[0]
+
+        opponent = random.choice(opponents)
+        return opponent
 
 class SimpleAIBehavior(AIBehavior):
     pass

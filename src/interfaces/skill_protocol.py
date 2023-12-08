@@ -5,10 +5,19 @@ class ISkill(Protocol):
     def create_skill(skill_name: str, fighter) -> 'ISkill':
         ...
 
+    def update(self) -> None:
+        ...
+
     def use(self, target) -> tuple[bool, str]:
         ...
 
     def is_usable(self) -> bool:
+        ...
+
+    def get_current_cooldown(self) -> int:
+        ...
+
+    def on_cooldown(self) -> bool:
         ...
 
     def get_name(self) -> str:
