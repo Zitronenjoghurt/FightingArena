@@ -1,7 +1,7 @@
 {
     "sword slash": {
         "actions": {
-            "attack": {"damage": 150, "on_target": true}
+            "attack": {"damage": 110, "on_target": true}
         },
         "effects": {},
         "stamina_cost": 20,
@@ -21,7 +21,7 @@
     },
     "ice storm": {
         "actions": {
-            "attack": {"damage": 5, "on_target": true}
+            "attack": {"damage": 50, "on_target": true}
         },
         "effects": {
             "freeze": {"duration": 2, "on_target": true}

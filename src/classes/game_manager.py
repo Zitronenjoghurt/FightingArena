@@ -22,6 +22,7 @@ class GameManager():
             return
         
         self.teams: dict[str, list[IFighter]] = {}
+        self.winner_teams: list[str] = []
         self.running = False
         self.round = 0
         self.max_rounds = max_rounds
@@ -114,6 +115,7 @@ class GameManager():
     def finish_game(self, team_names: set[str]) -> None:
         for team_name in team_names:
             message = f"TEAM {team_name} WINS!!!"
+            self.winner_teams.append(team_name)
             self.log_message(self.LOG_GAME_FINISH, message=message)
         self.stop_game()
 
@@ -121,6 +123,12 @@ class GameManager():
         if self.output_log:
             self.log_output_txt()
         self.running = False
+
+    def is_tie(self) -> bool:
+        return len(self.get_winner_teams()) == len(self.teams)
+
+    def get_winner_teams(self) -> list[str]:
+        return self.winner_teams
 
     def print_round(self, round: int) -> None:
         round_message = self.get_round_message(round)
