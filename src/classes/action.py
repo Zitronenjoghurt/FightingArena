@@ -55,7 +55,43 @@ class HealAction(Action):
         if self.user is None:
             return False
         return True
+
+class RegenerateMPAction(Action):
+    categories = ["mp_regen"]
     
+    def __init__(self, user: Optional[IFighter] = None, amount: int = 0):
+        super().__init__(user)
+        self.amount = amount
+
+    def execute(self, target: IFighter) -> bool:
+        if not self.is_executable():
+            return False
+        target.add_mp(self.amount)
+        return True
+
+    def is_executable(self) -> bool:
+        if self.user is None:
+            return False
+        return True
+
+class RegenerateStaminaAction(Action):
+    categories = ["stamina_regen"]
+    
+    def __init__(self, user: Optional[IFighter] = None, amount: int = 0):
+        super().__init__(user)
+        self.amount = amount
+
+    def execute(self, target: IFighter) -> bool:
+        if not self.is_executable():
+            return False
+        target.add_stamina(self.amount)
+        return True
+
+    def is_executable(self) -> bool:
+        if self.user is None:
+            return False
+        return True
+
 class LifeStealAction(Action):
     categories = ["damage", "hp_regen"]
 
@@ -84,6 +120,8 @@ class ActionFactory():
     registry = {
         "attack": AttackAction,
         "heal": HealAction,
+        "regen_mp": RegenerateMPAction,
+        "regen_stamina": RegenerateStaminaAction,
         "lifesteal": LifeStealAction
     }
 

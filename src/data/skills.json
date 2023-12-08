@@ -31,6 +31,18 @@
         "message": "{user} traps {opponent} in an ice storm.",
         "themes": ["ice", "magic", "ranged"]
     },
+    "rest": {
+        "actions": {
+            "heal": {"amount": 100},
+            "regen_stamina": {"amount": 20}
+        },
+        "effects": {
+            "burn": {"duration": 3, "damage": 25}
+        },
+        "cooldown": 3,
+        "message": "{user} takes a rest and regenerates 100 HP and 20 Stamina.",
+        "themes": ["passive"]
+    },
     "debug sword": {
         "actions": {
             "attack": {"damage": 15}

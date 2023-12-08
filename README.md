@@ -110,19 +110,31 @@ Actions are added as dicts to the actions-dict of a skill, for example:
 ```
 
 ### attack
-Will deal a specified amount of damage to the target.
+Will deal the specified amount of damage to the target.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`damage`|`no`|int|The amount of damage the action is supposed to deal to the target.|`0`|`100`|
 
 ### heal
-Will heal a specified amount of HP for the user.
+Will heal the specified amount of HP for the target.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`amount`|`no`|int|The amount of hp this action will heal to the user.|`0`|`100`|
 
+### regen_mp
+Will regenerate the specified amount of MP for the user.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`amount`|`no`|int|The amount of mp this action will add to the user.|`0`|`100`|
+
+### regen_stamina
+Will regenerate the specified amount of stamina for the user.
+|Property|Required|Type|Description|Default|Example|
+|---|---|---|---|---|---|
+|`amount`|`no`|int|The amount of stamina this action will add to the user.|`0`|`100`|
+
 ### lifesteal
-Will deal a specified amount of damage to the target and heal a specified amount of HP for the user.
+Will deal the specified amount of damage to the target and heal a specified amount of HP for the user.
 |Property|Required|Type|Description|Default|Example|
 |---|---|---|---|---|---|
 |`damage`|`no`|int|The amount of damage the action is supposed to deal to the target.|`0`|`100`|
