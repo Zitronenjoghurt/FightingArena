@@ -104,8 +104,8 @@ Actions are predetermined tasks a skill will fulfill once it is used. There is a
 Actions are added as dicts to the actions-dict of a skill, for example:
 ```json
 "actions": {
-    "attack": {"damage": 150},
-    "heal": {"amount": 50}
+    "attack": {"damage": 150, "on_target": true},
+    "heal": {"amount": 50, "on_self": true}
 },
 ```
 
