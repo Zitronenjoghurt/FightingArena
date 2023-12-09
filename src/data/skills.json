@@ -10,7 +10,7 @@
     },
     "fireball": {
         "actions": {
-            "attack": {"damage": 100, "on_target": true}
+            "attack": {"damage": 85, "on_target": true}
         },
         "effects": {
             "burn": {"duration": 3, "damage": 25, "on_target": true}
@@ -21,7 +21,7 @@
     },
     "ice storm": {
         "actions": {
-            "attack": {"damage": 50, "on_target": true}
+            "attack": {"damage": 25, "on_target": true}
         },
         "effects": {
             "freeze": {"duration": 2, "on_target": true}

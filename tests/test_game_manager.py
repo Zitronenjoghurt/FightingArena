@@ -166,3 +166,18 @@ def test_check_win_condition():
 
     barbarian2.set_hp(0)
     assert gm.check_win_condition() == set("B")
+
+def test_is_tie():
+    GameManager.reset_instance()
+
+    barbarian = Fighter.load_from_file(".debug_barbarian")
+    wizard = Fighter.load_from_file(".debug_wizard")
+
+    barbarian.set_hp(0)
+    wizard.set_hp(0)
+
+    teams = {"A": [barbarian], "B": [wizard]}
+    gm = GameManager.get_instance(teams=teams, print_log=False, round_time=0, max_rounds=100)
+    gm.start_game()
+
+    assert gm.is_tie() == True

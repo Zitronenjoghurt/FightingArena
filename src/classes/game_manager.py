@@ -113,10 +113,17 @@ class GameManager():
         return winning_teams
 
     def finish_game(self, team_names: set[str]) -> None:
+        win_messages = []
         for team_name in team_names:
-            message = f"TEAM {team_name} WINS!!!"
+            win_messages.append(f"TEAM {team_name} WINS!!!")
             self.winner_teams.append(team_name)
-            self.log_message(self.LOG_GAME_FINISH, message=message)
+        
+        if not self.is_tie():
+            self.log_message(self.LOG_GAME_FINISH, message='\n'.join(win_messages))
+        else:
+            tie_message = f"ITS A TIE!"
+            self.log_message(self.LOG_GAME_FINISH, message=tie_message)
+
         self.stop_game()
 
     def stop_game(self) -> None:
