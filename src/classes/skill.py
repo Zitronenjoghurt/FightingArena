@@ -14,7 +14,7 @@ SKILLS_FILE_PATH = os.path.join(CURRENT_DIR, '..', 'data', 'skills.json')
 DEBUG_SKILLS_FILE_PATH = os.path.join(CURRENT_DIR, '..', 'data', 'debug_skills.json')
 
 class SkillLibrary():
-    library = None
+    library: dict|None = None
     
     def __init__(self) -> None:
         if self.library is None:
@@ -27,13 +27,44 @@ class SkillLibrary():
             data.update(json.load(f))
         with open(DEBUG_SKILLS_FILE_PATH, 'r') as f:
             data.update(json.load(f))
+        for skill_name, skill_data in data.items():
+            data[skill_name]["categories"] = SkillLibrary.determine_skill_categories(skill_name, skill_data)
         return data
+    
+    @staticmethod
+    def determine_skill_categories(skill_name: str, skill_data: dict) -> list[str]:
+        actions = skill_data.get("actions", None)
+        effects = skill_data.get("effects", None)
+        skill = Skill(name=skill_name, actions=actions, effects=effects)
+        return skill.get_categories()
     
     def get_skill_data(self, skill_name: str) -> Optional[dict]:
         if not self.library:
             raise RuntimeError("Skill library is not loaded")
         
         return self.library.get(skill_name, None)
+    
+    def output_available_skills(self) -> None:
+        if not self.library:
+            raise RuntimeError("Skill library is not loaded")
+        
+        skills = {"categories": {}, "themes": {}}
+        for skill_name, skill_data in self.library.items():
+            if "debug" in skill_name:
+                continue
+
+            for category in skill_data.get("categories", []):
+                if category not in skills["categories"]:
+                    skills["categories"][category] = []
+                skills["categories"][category].append(skill_name)
+
+            for theme in skill_data.get("themes", []):
+                if theme not in skills["themes"]:
+                    skills["themes"][theme] = []
+                skills["themes"][theme].append(skill_name)
+
+        with open("output.json", "w") as file:
+            file.write(json.dumps(skills, indent=4))
 
 class Skill():
     def __init__(self, name: str, user: Optional[IFighter] = None, actions: Optional[dict[str, dict]] = None, effects: Optional[dict[str, dict]] = None, message: str = "", cooldown: int = 0, mp_cost: int = 0, stamina_cost: int = 0) -> None:

@@ -38,7 +38,7 @@ class Effect():
 
 class BurnEffect(Effect):
     name = "burning"
-    categories = ["burning"]
+    categories = ["burn"]
     message = "{target} is burning, -{damage}HP"
 
     def __init__(self, duration: int = 0, damage: int = 0, on_self: bool = False, on_target: bool = False) -> None:
@@ -51,7 +51,7 @@ class BurnEffect(Effect):
     
 class FreezeEffect(Effect):
     name = "frozen"
-    categories = ["frozen"]
+    categories = ["freeze"]
     message = "{target} is frozen and unable to attack."
 
     def execute(self, target: IFighter) -> str:
