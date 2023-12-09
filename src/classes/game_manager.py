@@ -1,7 +1,7 @@
 import time
-from tabulate import tabulate
 from typing import Mapping, Optional, Sequence
 from ..interfaces.fighter_protocol import IFighter
+from ..modules.tabularize import create_table
 
 LOG_OUTPUT_FILE_PATH = "output.txt"
 
@@ -74,7 +74,7 @@ class GameManager():
             fighter_statuses.append(fighter.get_status())
 
         self.log_message(self.LOG_DEBUG_FIGHTER_STATUS_RAW, fighter_statuses)
-        self.log_message(self.LOG_FIGHTER_STATUS, tabulate(fighter_statuses, fighter_status_headers, tablefmt="grid", stralign="right"))
+        self.log_message(self.LOG_FIGHTER_STATUS, create_table(fighter_status_headers, fighter_statuses))
 
         winning_teams = self.check_win_condition()
         if len(winning_teams) > 0:
