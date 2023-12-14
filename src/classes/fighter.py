@@ -2,6 +2,7 @@ import json
 import os
 from typing import Optional
 from .ai_behavior import AIBehavior, AIBehaviorFactory
+from .body import Body
 from .game_manager import GameManager
 from .skill import Skill
 from ..interfaces.effect_protocol import IEffect
@@ -44,6 +45,7 @@ class Fighter():
         
         self.effects = {}
         self.skills: dict[str, ISkill] = {}
+        self.body: Optional[Body] = None
 
         self.usable_skill_categories = []
         self.usable_category_skills: dict[str, list[ISkill]] = {}
@@ -94,6 +96,7 @@ class Fighter():
         initiative = data.get("initiative", 1)
         skills = data.get("skills", [])
         name = data.get("name", "no_name")
+        body_parts = data.get("body_parts", [])
         
         if not isinstance(skills, list):
             raise ValueError(f"Fighter overall skill data is invalid.\n{skills}")
@@ -104,8 +107,17 @@ class Fighter():
             skill_name = skill_data.get("name", None)
             if skill_name is None:
                 raise ValueError(f"Fighter specific skill data is invalid.\n{skill_data}")
-            skill = Skill.create_skill(skill_name=skill_name, fighter=fighter)
+            try:
+                skill = Skill.create_skill(skill_name=skill_name, fighter=fighter)
+            except ValueError as e:
+                raise ValueError(f"An error occured while trying to initialize the skills for fighter {name}") from e
             fighter.add_skill(skill=skill)
+
+        try:
+            body = Body.create(body_parts_list=body_parts)
+            fighter.add_body(body=body)
+        except ValueError as e:
+            raise ValueError(f"An error occured while trying to initialize the body parts for fighter {name}") from e
 
         fighter.update()
         return fighter
@@ -264,6 +276,13 @@ class Fighter():
     # endregion
     
     
+    # region BODY
+    def add_body(self, body: Body) -> None:
+        body.add_fighter(self)
+        self.body = body
+    
+    # endregion
+
     # region GETTER/SETTER
     def get_name(self) -> str:
         return self.name
