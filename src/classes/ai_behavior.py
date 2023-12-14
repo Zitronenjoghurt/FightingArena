@@ -1,5 +1,5 @@
 import random
-from typing import Optional
+from typing import Callable, Optional
 from .game_manager import GameManager
 from ..interfaces.fighter_protocol import IFighter
 from ..interfaces.skill_protocol import ISkill
@@ -31,7 +31,83 @@ class AIBehavior():
         return opponent
 
 class SimpleAIBehavior(AIBehavior):
-    pass
+    HP_HEALTH_TRESHOLD = 0.5
+    MP_REGEN_TRESHOLD = 0.5
+    STAMINA_REGEN_TRESHOLD = 0.5
+
+    SCORE_FUNCTIONS = {
+        "hp_regen": "calculate_hp_regen_score",
+        "mp_regen": "calculate_mp_regen_score",
+        "stamina_regen": "calculate_stamina_regen_score"
+    }
+
+    def select_skill_and_opponent(self) -> tuple[Optional[ISkill], Optional[IFighter]]:
+        skill = self.select_skill()
+        opponent = self.select_random_opponent()
+        return skill, opponent
+    
+    def select_skill(self) -> Optional[ISkill]:
+        category_skills = self.fighter.get_usable_category_skills()
+        categories = list(category_skills.keys())
+
+        category_scores = {}
+        for category in categories:
+            score_function = self.get_score_function(category=category)
+            if not score_function:
+                category_scores[category] = 1
+            else:
+                category_scores[category] = score_function()
+        
+        final_categories = self.get_highest_score_categories(category_scores=category_scores)
+        chosen_category = random.choice(final_categories)
+        return random.choice(category_skills.get(chosen_category, []))
+
+    def get_score_function(self, category: str) -> Optional[Callable]:
+        function_name = self.SCORE_FUNCTIONS.get(category, None)
+
+        if not function_name:
+            return None
+        
+        return getattr(self, function_name)
+
+    def get_highest_score_categories(self, category_scores: dict[str, int]) -> list[str]:
+        if not category_scores:
+            return []
+        
+        max_score = max(category_scores.values())
+
+        highest_score_categories = [category for category, score in category_scores.items() if score == max_score]
+
+        return highest_score_categories
+    
+    def calculate_hp_regen_score(self) -> int:
+        hp_percentage = self.fighter.get_hp() / self.fighter.get_max_hp()
+        if hp_percentage > self.HP_HEALTH_TRESHOLD:
+            return 0
+        score = (self.HP_HEALTH_TRESHOLD - hp_percentage) / self.HP_HEALTH_TRESHOLD * 1000
+        return int(score)
+    
+    def calculate_mp_regen_score(self) -> int:
+        if self.fighter.get_max_mp() == 0:
+            return 0
+        
+        mp_percentage = self.fighter.get_mp() / self.fighter.get_max_mp()
+        if mp_percentage > self.MP_REGEN_TRESHOLD:
+            return 0
+        
+        score = (self.MP_REGEN_TRESHOLD - mp_percentage) / self.MP_REGEN_TRESHOLD * 1000
+        return int(score)
+    
+    def calculate_stamina_regen_score(self) -> int:
+        if self.fighter.get_max_stamina() == 0:
+            return 0
+        
+        stamina_percentage = self.fighter.get_stamina() / self.fighter.get_max_stamina()
+        if stamina_percentage > self.STAMINA_REGEN_TRESHOLD:
+            return 0
+        
+        score = (self.STAMINA_REGEN_TRESHOLD - stamina_percentage) / self.STAMINA_REGEN_TRESHOLD * 1000
+        return int(score)
 
 class AIBehaviorFactory():
     _register = {
@@ -46,4 +122,4 @@ class AIBehaviorFactory():
         if not behavior_class:
             behavior_class = AIBehavior
         
-        return AIBehavior(fighter=fighter)
+        return behavior_class(fighter=fighter)

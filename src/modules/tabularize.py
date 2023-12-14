@@ -20,4 +20,4 @@ def create_table(headers, rows):
         table_str += create_row_string(row) + "\n"
         table_str += create_separator() + "\n"
 
-    return table_str
+    return table_str[:-1]

@@ -148,7 +148,7 @@ class GameManager():
             self.log.get_logs_string(round, [self.LOG_FIGHTER_STATUS]),
             "",
             self.log.get_logs_string(round, [self.LOG_SKILL_USE, self.LOG_EFFECT_APPLY, self.LOG_EFFECT_EXECUTE, self.LOG_EFFECT_REMOVE, self.LOG_GAME_FINISH]),
-            "==================================================\n",
+            "==================================================\n\n",
         ]
         return '\n'.join(round_message)
     

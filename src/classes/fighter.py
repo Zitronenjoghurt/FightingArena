@@ -18,7 +18,7 @@ class Fighter():
                  max_stamina: int = 0,
                  initiative: int = 1,
                  name: str = "no_name",
-                 behavior_name: str = "random"
+                 behavior_name: str = "simple"
                  ) -> None:
         validate_init, invalid_init_message = self.validate_init_parameters(max_hp=max_hp, max_mp=max_mp, max_stamina=max_stamina, initiative=initiative, name=name, behavior_name=behavior_name)
         if not validate_init:
