@@ -34,6 +34,7 @@ class GameManager():
 
         self.add_teams(teams=teams)
 
+    # region SINGLETON MANAGEMENT
     @staticmethod
     def get_instance(teams: Mapping[str, Sequence[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'GameManager':
         if not GameManager._instance:
@@ -44,6 +45,10 @@ class GameManager():
     def reset_instance() -> None:
         GameManager._instance = None
 
+    # endregion
+        
+    
+    # region GAME FLOW CONTROL
     def start_game(self) -> None:
         self.log_message(self.LOG_GAME_STATUS_TOP, "==================={FIGHT START}==================")
         for team_name, fighters in self.teams.items():
@@ -83,6 +88,43 @@ class GameManager():
         if self.print_log:
             self.print_round(self.round)
 
+    def stop_game(self) -> None:
+        if self.output_log:
+            self.log_output_txt()
+        self.running = False
+
+    def finish_game(self, team_names: set[str]) -> None:
+        win_messages = []
+        for team_name in team_names:
+            win_messages.append(f"TEAM {team_name} WINS!!!")
+            self.winner_teams.append(team_name)
+        
+        if not self.is_tie():
+            self.log_message(self.LOG_GAME_FINISH, message='\n'.join(win_messages))
+        else:
+            tie_message = f"ITS A TIE!"
+            self.log_message(self.LOG_GAME_FINISH, message=tie_message)
+
+        self.stop_game()
+
+    def check_win_condition(self) -> set[str]:
+        winning_teams = set()
+        for fighter in self.get_fighters():
+            opponents = self.get_opponents(fighter)
+            if len(opponents) == 0:
+                winning_teams.add(fighter.get_team())
+        return winning_teams
+    
+    def is_tie(self) -> bool:
+        return len(self.get_winner_teams()) == len(self.teams)
+    
+    def get_winner_teams(self) -> list[str]:
+        return self.winner_teams
+    
+    # endregion
+
+    
+    # region ROUND MANAGEMENT
     def run_fighter_turn(self, fighter: IFighter) -> None:
         skill, opponent = fighter.get_next_move()
 
@@ -104,43 +146,6 @@ class GameManager():
         if success:
             fighter.set_has_attacked(True)
 
-    def check_win_condition(self) -> set[str]:
-        winning_teams = set()
-        for fighter in self.get_fighters():
-            opponents = self.get_opponents(fighter)
-            if len(opponents) == 0:
-                winning_teams.add(fighter.get_team())
-        return winning_teams
-
-    def finish_game(self, team_names: set[str]) -> None:
-        win_messages = []
-        for team_name in team_names:
-            win_messages.append(f"TEAM {team_name} WINS!!!")
-            self.winner_teams.append(team_name)
-        
-        if not self.is_tie():
-            self.log_message(self.LOG_GAME_FINISH, message='\n'.join(win_messages))
-        else:
-            tie_message = f"ITS A TIE!"
-            self.log_message(self.LOG_GAME_FINISH, message=tie_message)
-
-        self.stop_game()
-
-    def stop_game(self) -> None:
-        if self.output_log:
-            self.log_output_txt()
-        self.running = False
-
-    def is_tie(self) -> bool:
-        return len(self.get_winner_teams()) == len(self.teams)
-
-    def get_winner_teams(self) -> list[str]:
-        return self.winner_teams
-
-    def print_round(self, round: int) -> None:
-        round_message = self.get_round_message(round)
-        print(round_message)
-
     def get_round_message(self, round: int) -> str:
         round_message = [
             "==================================================",
@@ -150,23 +155,16 @@ class GameManager():
             self.log.get_logs_string(round, [self.LOG_SKILL_USE, self.LOG_EFFECT_APPLY, self.LOG_EFFECT_EXECUTE, self.LOG_EFFECT_REMOVE, self.LOG_GAME_FINISH]),
             "==================================================\n\n",
         ]
-        return '\n'.join(round_message)
-    
-    def get_start_message(self) -> str:
-        return self.log.get_logs_string(0, [self.LOG_GAME_STATUS_TOP]) + "\n"
-    
-    def log_output_txt(self) -> None:
-        round_messages = [self.get_start_message()]
-        for i in range(1, self.round + 1):
-            round_messages.append(self.get_round_message(i))
+        return '\n'.join(round_message)   
+
+    def print_round(self, round: int) -> None:
+        round_message = self.get_round_message(round)
+        print(round_message)
+
+    # endregion
         
-        log_string = '\n'.join(round_messages)
-        with open(LOG_OUTPUT_FILE_PATH, "w") as file:
-            file.write(log_string)
-
-    def log_message(self, log_type: str, message: str | list) -> None:
-        self.log.log_message(round=self.round, log_type=log_type, message=message)
-
+    
+    # region TEAM MANAGEMENT
     def add_teams(self, teams: Mapping[str, Sequence[IFighter]]) -> None:
         for team_name, fighters in teams.items():
             if self.teams.get(team_name, None) is None:
@@ -188,6 +186,10 @@ class GameManager():
     def get_team_fighters(self, team_name: str) -> list[IFighter]:
         return self.teams.get(team_name, [])
 
+    # endregion
+
+    
+    # region FIGHTER MANAGEMENT
     def get_fighters(self) -> list[IFighter]:
         fighters = []
         for fighter_list in self.teams.values():
@@ -200,10 +202,32 @@ class GameManager():
         opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters if fighter.get_hp() > 0]
         return opponents
     
+    # endregion
+
+
+    # region LOGGING
+    def get_start_message(self) -> str:
+        return self.log.get_logs_string(0, [self.LOG_GAME_STATUS_TOP]) + "\n"
+    
+    def log_output_txt(self) -> None:
+        round_messages = [self.get_start_message()]
+        for i in range(1, self.round + 1):
+            round_messages.append(self.get_round_message(i))
+        
+        log_string = '\n'.join(round_messages)
+        with open(LOG_OUTPUT_FILE_PATH, "w") as file:
+            file.write(log_string)
+
+    def log_message(self, log_type: str, message: str | list) -> None:
+        self.log.log_message(round=self.round, log_type=log_type, message=message)
+
+    # endregion
+    
 class GameLog():
     def __init__(self) -> None:
         self.round_logs: dict[int, dict[str, list[str]]] = {}
     
+    # region LOG MANAGEMENT
     def log_message(self, round: int, log_type: str, message: str | list) -> None:
         if round not in self.round_logs:
             self.round_logs[round] = {}
@@ -212,6 +236,9 @@ class GameLog():
             self.round_logs[round][log_type] = []
 
         self.round_logs[round][log_type].append(message) # type: ignore
+
+    def get_round_log(self, round: int) -> dict[str, list[str]]:
+        return self.round_logs.get(round, {})
 
     def get_logs_string(self, round: int, log_types: list[str]) -> str:
         if round not in self.round_logs:
@@ -224,16 +251,19 @@ class GameLog():
                 continue
             logs_strings.extend(round_log.get(log_type, []))
         return '\n'.join(logs_strings)
+    
+    # endregion
+    
 
+    # region PRINT
     def print_logs(self, round: int, log_types: list[str]) -> None:
         if round not in self.round_logs:
             return
         
         print(self.get_logs_string(round=round, log_types=log_types))
-        
-    def get_round_log(self, round: int) -> dict[str, list[str]]:
-        return self.round_logs.get(round, {})
     
     def print_strings(self, strings: list[str]) -> None:
         for string in strings:
             print(string)
+            
+    # endregion

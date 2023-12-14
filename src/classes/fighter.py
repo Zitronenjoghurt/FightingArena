@@ -53,6 +53,23 @@ class Fighter():
 
         self.behavior: AIBehavior = AIBehaviorFactory.create_behavior(behavior_name=behavior_name, fighter=self)
 
+    # region INITIALIZATION
+    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, initiative: int, name: str, behavior_name: str) -> tuple[bool, str]:
+        if not isinstance(max_hp, int):
+            return False, "max_hp has to be of type int"
+        if not isinstance(max_mp, int):
+            return False, "max_mphas to be of type int"
+        if not isinstance(max_stamina, int):
+            return False, "max_stamina has to be of type int"
+        if not isinstance(initiative, int):
+            return False, "initiative has to be of type int"
+        if not isinstance(name, str):
+            return False, "name has to be of type string"
+        if not isinstance(behavior_name, str):
+            return False, "behavior_name has to be of type string"
+
+        return True, ""
+
     @staticmethod
     def load_from_file(fighter_class_name: str, fighter_name: str = "no_name") -> IFighter:
         fighter_file_path = os.path.join(FIGHTERS_FILE_PATH, f"{fighter_class_name}.json")
@@ -92,23 +109,11 @@ class Fighter():
 
         fighter.update()
         return fighter
-        
-    def validate_init_parameters(self, max_hp: int, max_mp: int, max_stamina: int, initiative: int, name: str, behavior_name: str) -> tuple[bool, str]:
-        if not isinstance(max_hp, int):
-            return False, "max_hp has to be of type int"
-        if not isinstance(max_mp, int):
-            return False, "max_mphas to be of type int"
-        if not isinstance(max_stamina, int):
-            return False, "max_stamina has to be of type int"
-        if not isinstance(initiative, int):
-            return False, "initiative has to be of type int"
-        if not isinstance(name, str):
-            return False, "name has to be of type string"
-        if not isinstance(behavior_name, str):
-            return False, "behavior_name has to be of type string"
+    
+    # endregion
+    
 
-        return True, ""
-
+    # region CORE FUNCTIONALITY
     def update(self) -> None:
         self.execute_effects()
         self.has_attacked_this_round = False
@@ -123,14 +128,17 @@ class Fighter():
 
         self.update_usable_skills()
 
+    def get_status(self) -> list[str]:
+        return [f"[{self.name}]", f"{self.get_hp()} ({self.previous_hp_difference})", f"{self.get_mp()} ({self.previous_mp_difference})", f"{self.get_stamina()} ({self.previous_stamina_difference})"]
+    
     def get_next_move(self) -> tuple[Optional[ISkill], Optional[IFighter]]:
         skill, opponent = self.behavior.select_skill_and_opponent()
         
         return skill, opponent
-    
-    def get_status(self) -> list[str]:
-        return [f"[{self.name}]", f"{self.get_hp()} ({self.previous_hp_difference})", f"{self.get_mp()} ({self.previous_mp_difference})", f"{self.get_stamina()} ({self.previous_stamina_difference})"]
+    # endregion
 
+
+    # region EFFECTS
     def execute_effects(self) -> None:
         if len(self.effects) == 0:
             return
@@ -177,7 +185,11 @@ class Fighter():
 
     def get_effects(self) -> list[str]:
         return list(self.effects.keys())
+    
+    # endregion
 
+
+    # region SKILLS
     def use_skill(self, skill_name: str, target: IFighter) -> bool:
         skill = self.get_skill(skill_name)
         if skill is None or not self.can_attack():
@@ -230,6 +242,10 @@ class Fighter():
     def has_skill(self, skill_name: str) -> bool:
         return self.get_skill(skill_name) is not None
     
+    # endregion
+    
+
+    # region ATTACK
     def can_attack(self) -> bool:
         return self.allowed_to_attack
     
@@ -245,6 +261,10 @@ class Fighter():
     def set_has_attacked(self, has_attacked: bool) -> None:
         self.has_attacked_this_round = has_attacked
     
+    # endregion
+    
+    
+    # region GETTER/SETTER
     def get_name(self) -> str:
         return self.name
     
@@ -299,6 +319,10 @@ class Fighter():
     def set_initiative(self, initiative: int) -> None:
         self.initiative = initiative
 
+    # endregion
+        
+    
+    # region STAT MODIFICATION
     def add_hp(self, hp: int) -> None:
         self.hp_difference += hp
         if self.hp + self.hp_difference > self.max_hp:
@@ -345,3 +369,5 @@ class Fighter():
         self.mp_difference = 0
         self.previous_stamina_difference = self.stamina_difference
         self.stamina_difference = 0
+
+    # endregion
