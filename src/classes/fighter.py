@@ -5,6 +5,7 @@ from .ai_behavior import AIBehavior, AIBehaviorFactory
 from .body import Body
 from .game_manager import GameManager
 from .skill import Skill
+from ..interfaces.body_protocol import IBody
 from ..interfaces.effect_protocol import IEffect
 from ..interfaces.fighter_protocol import IFighter
 from ..interfaces.skill_protocol import ISkill
@@ -45,7 +46,7 @@ class Fighter():
         
         self.effects = {}
         self.skills: dict[str, ISkill] = {}
-        self.body: Optional[Body] = None
+        self.body: Optional[IBody] = None
 
         self.usable_skill_categories = []
         self.usable_category_skills: dict[str, list[ISkill]] = {}
@@ -277,7 +278,7 @@ class Fighter():
     
     
     # region BODY
-    def add_body(self, body: Body) -> None:
+    def add_body(self, body: IBody) -> None:
         body.add_fighter(self)
         self.body = body
     
