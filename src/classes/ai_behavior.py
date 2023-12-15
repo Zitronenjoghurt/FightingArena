@@ -23,7 +23,7 @@ class AIBehavior():
 
     def select_random_opponent(self) -> Optional[IFighter]:
         gm = GameManager.get_instance()
-        opponents = gm.get_opponents(self.fighter)
+        opponents = gm.team_manager.get_fighter_opponents(self.fighter)
         if len(opponents) == 0:
             return None
 

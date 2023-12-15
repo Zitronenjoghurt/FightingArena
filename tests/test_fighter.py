@@ -249,9 +249,9 @@ def test_apply_effects():
     GameManager.reset_instance()
     fighter1 = Fighter(max_hp=100, max_mp=100, max_stamina=100)
     burn = EffectFactory.create_effect("burn", {"duration": 3, "damage": 10})
-    teams = {"A": [fighter1]}
 
-    gm = GameManager.get_instance(teams=teams)
+    gm = GameManager.get_instance()
+    gm.add_fighter(fighter=fighter1, team_name="A")
 
     fighter1.apply_effect(burn)
     assert gm.log.get_round_log(0) == {"effect_apply": ['no_name received effect: burning']}

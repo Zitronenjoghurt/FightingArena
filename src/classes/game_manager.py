@@ -1,5 +1,6 @@
 import time
 from typing import Mapping, Optional, Sequence
+from .team_manager import TeamManager
 from ..interfaces.fighter_protocol import IFighter
 from ..modules.tabularize import create_table
 
@@ -17,11 +18,13 @@ class GameManager():
     LOG_FIGHTER_STATUS = "fighter_status"
     LOG_SKILL_USE = "skill_use"
     
-    def __init__(self, teams: Mapping[str, Sequence[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> None:
+    def __init__(self, team_manager: Optional[TeamManager] = None, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> None:
         if GameManager._instance is not None:
             return
         
-        self.teams: dict[str, list[IFighter]] = {}
+        if team_manager is None:
+            team_manager = TeamManager()
+        
         self.winner_teams: list[str] = []
         self.running = False
         self.round = 0
@@ -32,13 +35,13 @@ class GameManager():
         self.print_log = print_log
         self.output_log = output_log
 
-        self.add_teams(teams=teams)
+        self.team_manager: TeamManager = team_manager
 
     # region SINGLETON MANAGEMENT
     @staticmethod
-    def get_instance(teams: Mapping[str, Sequence[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'GameManager':
+    def get_instance(team_manager: Optional[TeamManager] = None, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'GameManager':
         if not GameManager._instance:
-            GameManager._instance = GameManager(teams=teams, round_time=round_time, max_rounds=max_rounds, print_log=print_log, output_log=output_log)
+            GameManager._instance = GameManager(team_manager=team_manager, round_time=round_time, max_rounds=max_rounds, print_log=print_log, output_log=output_log)
         return GameManager._instance
     
     @staticmethod
@@ -51,9 +54,7 @@ class GameManager():
     # region GAME FLOW CONTROL
     def start_game(self) -> None:
         self.log_message(self.LOG_GAME_STATUS_TOP, "==================={FIGHT START}==================")
-        for team_name, fighters in self.teams.items():
-            team_info = f"Team {team_name}: " + ",".join([fighter.get_name() for fighter in fighters])
-            self.log_message(self.LOG_GAME_STATUS_TOP, team_info)
+        self.log_message(self.LOG_GAME_STATUS_TOP, self.team_manager.get_roster_string())
         self.log_message(self.LOG_GAME_STATUS_TOP, "==================================================")
         
         if self.print_log:
@@ -67,7 +68,7 @@ class GameManager():
 
     def run(self) -> None:
         self.log_message(self.LOG_GAME_STATUS_TOP, f"[ROUND {self.round}]")
-        fighters = self.get_fighters()
+        fighters = self.team_manager.get_fighters()
 
         for fighter in fighters:
             self.run_fighter_turn(fighter)
@@ -77,6 +78,8 @@ class GameManager():
         for fighter in fighters:
             fighter.update()
             fighter_statuses.append(fighter.get_status())
+
+        self.team_manager.update()
 
         self.log_message(self.LOG_DEBUG_FIGHTER_STATUS_RAW, fighter_statuses)
         self.log_message(self.LOG_FIGHTER_STATUS, create_table(fighter_status_headers, fighter_statuses))
@@ -109,14 +112,14 @@ class GameManager():
 
     def check_win_condition(self) -> set[str]:
         winning_teams = set()
-        for fighter in self.get_fighters():
-            opponents = self.get_opponents(fighter)
+        for fighter in self.team_manager.get_fighters():
+            opponents = self.team_manager.get_fighter_opponents(fighter)
             if len(opponents) == 0:
                 winning_teams.add(fighter.get_team())
         return winning_teams
     
     def is_tie(self) -> bool:
-        return len(self.get_winner_teams()) == len(self.teams)
+        return len(self.get_winner_teams()) == self.team_manager.get_team_count()
     
     def get_winner_teams(self) -> list[str]:
         return self.winner_teams
@@ -162,48 +165,16 @@ class GameManager():
         print(round_message)
 
     # endregion
-        
-    
+
+
     # region TEAM MANAGEMENT
-    def add_teams(self, teams: Mapping[str, Sequence[IFighter]]) -> None:
-        for team_name, fighters in teams.items():
-            if self.teams.get(team_name, None) is None:
-                self.teams[team_name] = list(fighters)
-            else:
-                self.teams[team_name].extend(fighters)
-            for fighter in fighters:
-                fighter.set_team(team_name=team_name)
+    def add_fighter(self, fighter: IFighter, team_name: str) -> None:
+        self.team_manager.add_fighter(fighter=fighter, team_name=team_name)
 
-    def get_team_name(self, fighter: IFighter) -> Optional[str]:
-        for team_name, fighters in self.teams.items():
-            if fighter in fighters:
-                return team_name
-        return None
-
-    def get_team_names(self) -> list[str]:
-        return list(self.teams.keys())
-    
-    def get_team_fighters(self, team_name: str) -> list[IFighter]:
-        return self.teams.get(team_name, [])
+    def add_fighters(self, fighters: list[IFighter], team_name: str) -> None:
+        self.team_manager.add_fighters(fighters=fighters, team_name=team_name)
 
     # endregion
-
-    
-    # region FIGHTER MANAGEMENT
-    def get_fighters(self) -> list[IFighter]:
-        fighters = []
-        for fighter_list in self.teams.values():
-            fighters.extend(fighter_list)
-        fighters.sort(key=lambda fighter: fighter.get_initiative(), reverse=True)
-        return fighters
-    
-    def get_opponents(self, fighter: IFighter) -> list[IFighter]:
-        fighter_team = fighter.get_team()
-        opponents = [fighter for team_name, fighters in self.teams.items() if team_name != fighter_team for fighter in fighters if fighter.get_hp() > 0]
-        return opponents
-    
-    # endregion
-
 
     # region LOGGING
     def get_start_message(self) -> str:

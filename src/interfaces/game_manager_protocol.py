@@ -1,10 +1,11 @@
-from typing import Mapping, Optional, Protocol, Sequence
+from typing import Optional, Protocol
 from ..interfaces.fighter_protocol import IFighter
+from ..interfaces.team_manager_interface import ITeamManager
 
 class IGameManager(Protocol):
     # region SINGLETON MANAGEMENT
     @staticmethod
-    def get_instance(teams: Mapping[str, Sequence[IFighter]] = {}, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'IGameManager':
+    def get_instance(team_manager: Optional[ITeamManager] = None, round_time: float = 1, max_rounds: int = 100000, print_log: bool = True, output_log: bool = False) -> 'IGameManager':
         ...
     
     @staticmethod
@@ -48,29 +49,15 @@ class IGameManager(Protocol):
     def print_round(self, round: int) -> None:
         ...
     # endregion
-        
     
+
     # region TEAM MANAGEMENT
-    def add_teams(self, teams: Mapping[str, Sequence[IFighter]]) -> None:
+    def add_fighter(self, fighter: IFighter, team_name: str) -> None:
         ...
 
-    def get_team_name(self, fighter: IFighter) -> Optional[str]:
+    def add_fighters(self, fighters: list[IFighter], team_name: str) -> None:
         ...
 
-    def get_team_names(self) -> list[str]:
-        ...
-    
-    def get_team_fighters(self, team_name: str) -> list[IFighter]:
-        ...
-    # endregion
-
-    
-    # region FIGHTER MANAGEMENT
-    def get_fighters(self) -> list[IFighter]:
-        ...
-    
-    def get_opponents(self, fighter: IFighter) -> list[IFighter]:
-        ...
     # endregion
 
 
